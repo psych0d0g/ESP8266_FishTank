@@ -14,10 +14,19 @@
 #define ssid     "..."       // WiFi SSID
 #define password "..."  // WiFi password
 
-#define INTERVAL 5000   // time between reads
-unsigned long lastRead = 0;
-
+// Target temperature you want to have in your tank
 double desired_temp = 25.0;
+
+//Setpoint (Maximum difference between measured and desired temperature)
+double maxTdiff = 0.5;
+
+//Minimum and Maximum PWM command, according fan specs and noise level required
+double commandMin = 0;
+double commandMax = 250;
+
+/**
+  * You dont usually need to change anything below this line
+ */
 
 int avgLoop = 5;    //temp measurement loops
 
@@ -26,12 +35,8 @@ double kp=20;   //proportional parameter
 double ki=5;   //integral parameter
 double kd=1;   //derivative parameter
 
-//Setpoint (Maximum difference between internal and external temperature)
-double maxTdiff = 0.5;
-
-//Minimum and Maximum PWM command, according fan specs and noise level required
-double commandMin = 0;
-double commandMax = 250;
+#define INTERVAL 5000   // time between reads
+unsigned long lastRead = 0;
 
 double tempInt, avgInt, tempDiff, command;
 
