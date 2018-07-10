@@ -114,11 +114,15 @@ void setup()
   WiFi.hostname( host );
   WiFiManager wifiManager;
 
-  wifiManager.autoConnect("ESP_FishTank");
-
-  while ( WiFi.status() != WL_CONNECTED ) {
-    delay ( 500 ); Serial.print ( "." );
+  wifiManager.setBreakAfterConfig(true);
+  wifiManager.resetSettings();
+  if (!wifiManager.autoConnect("ESP_FishTank")) {
+    Serial.println("failed to connect, we will fire up config mode");
+    delay(3000);
+    wifiManager.startConfigPortal("ESP_FishTank");
+    delay(5000);
   }
+
   Serial.print ( "IP address: " ); Serial.println ( WiFi.localIP() );
   /*return index page which is stored in serverIndex */
   server.on ( "/", handleRoot );
