@@ -1,7 +1,9 @@
-#include "ESP8266_FishTank.h"
+#include "IOT_fishtank.h"
 #include "thermistor.h"
 #include "HardwareSerial.h"
-#include <WiFiClient.h>
+#include <ESP8266WiFi.h>
+#include <WiFiManager.h>
+#include <DNSServer.h>
 #include <ESP8266WebServer.h>
 #include <PID_v1.h>
 
@@ -11,22 +13,11 @@
 
 // Wifi Setup
 #define host "Fishtank"
-#define ssid     "..."       // WiFi SSID
-#define password "..."  // WiFi password
 
-// Target temperature you want to have in your tank
+#define INTERVAL 5000   // time between reads
+unsigned long lastRead = 0;
+
 double desired_temp = 25.0;
-
-//Setpoint (Maximum difference between measured and desired temperature)
-double maxTdiff = 0.5;
-
-//Minimum and Maximum PWM command, according fan specs and noise level required
-double commandMin = 0;
-double commandMax = 250;
-
-/**
-  * You dont usually need to change anything below this line
- */
 
 int avgLoop = 5;    //temp measurement loops
 
@@ -35,8 +26,12 @@ double kp=20;   //proportional parameter
 double ki=5;   //integral parameter
 double kd=1;   //derivative parameter
 
-#define INTERVAL 5000   // time between reads
-unsigned long lastRead = 0;
+//Setpoint (Maximum difference between internal and external temperature)
+double maxTdiff = 0.5;
+
+//Minimum and Maximum PWM command, according fan specs and noise level required
+double commandMin = 0;
+double commandMax = 250;
 
 double tempInt, avgInt, tempDiff, command;
 
@@ -117,11 +112,13 @@ void setup()
 {
   Serial.begin(115200);
   WiFi.hostname( host );
-  WiFi.begin ( ssid, password );
+  WiFiManager wifiManager;
+
+  wifiManager.autoConnect("ESP_FishTank");
+
   while ( WiFi.status() != WL_CONNECTED ) {
     delay ( 500 ); Serial.print ( "." );
   }
-  Serial.print ( "Connected to " ); Serial.println ( ssid );
   Serial.print ( "IP address: " ); Serial.println ( WiFi.localIP() );
   /*return index page which is stored in serverIndex */
   server.on ( "/", handleRoot );
@@ -149,4 +146,3 @@ void loop()
   handleTempLoop();
   server.handleClient();
 }
-
