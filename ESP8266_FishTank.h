@@ -1,7 +1,7 @@
 #ifndef header_h
 #define header_h
 
-String file1=
+String main_page=
 "<html>\r\n"
 "    <head>\r\n"
 "      <style>\r\n"
@@ -115,4 +115,34 @@ String file1=
 "  </body>\r\n"
 "</html>\r\n";
 
+String settings_page=
+"<html>\r\n"
+"    <head>\r\n"
+"      <style>\r\n"
+"        body { background-color: #202020; }\r\n"
+"        h2, td, a { color: #95A5A6; }\r\n"
+"        p { color: white; }\r\n"
+"      </style>\r\n"
+"      <title>Aquarium Controller</title>\r\n"
+"      <meta charset=\"utf-8\">\r\n"
+"    </head>\r\n"
+"    <body>\r\n"
+"        <h2>Aquarium Controller</h2>\r\n"
+"        <form method=\"post\" action=\"\">\r\n"
+"        <table>\r\n"
+"            <tr>\r\n"
+"                <td align=\"left\"><strong>Desired water temperature [C]</strong></td>\r\n"
+"                <td align=\"left\"><input type=\"text\"name=\"temp\" value=\"\" /></td>\r\n"
+"            </tr>\r\n"
+"            <tr>\r\n"
+"                <td align=\"left\"><strong>Maximum okay offset [C]</strong></td>\r\n"
+"                <td align=\"left\"><input type=\"text\" name=\"offset\" value=\"\" /></td>\r\n"
+"            </tr>\r\n"
+"            <tr>\r\n"
+"                <td align=\"left\"><input type=\"submit\" name=\"submit\" value=\"Apply\" /></td>\r\n"
+"                <td align=\"left\"></td>\r\n"
+"            <tr>\r\n"
+"        </table>\r\n"
+"</form>\r\n";
 #endif
+
