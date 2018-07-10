@@ -7,9 +7,9 @@ Tested on LoLin NodeMCU 1.0 ESP8266 Board
 
 ### Simplified Schematics
 
-![alt text](https://raw.githubusercontent.com/psych0d0g/ESP8266_FishTank/master/schematics/ESPtank.png "Simplified Schematics")
+![alt text](https://raw.githubusercontent.com/psych0d0g/ESP8266_FishTank/master/schematics/ESP8266_FishTank.png "Simplified Schematics")
 
-The full fritzing schematic file can be downloaded [here](https://raw.githubusercontent.com/psych0d0g/ESP8266_FishTank/master/schematics/ESPtank.fzz)
+The full fritzing schematic file can be downloaded [here](https://raw.githubusercontent.com/psych0d0g/ESP8266_FishTank/master/schematics/ESP8266_FishTank.fzz)
 
 ### Current Features
 
