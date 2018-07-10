@@ -16,3 +16,10 @@ The full fritzing schematic file can be downloaded [here](https://raw.githubuser
 * Measures Temperature from connected NTC 100k termristor
 * Controlls connected FAN using PID PWM
 * Displays current Temperature and FAN speed on animated ajax gauges in Browser
+
+### Dependencies
+
+Apart from Standart Libs we require the following:
+
+ *   https://github.com/tzapu/WiFiManager
+ *   https://github.com/panStamp/thermistor
