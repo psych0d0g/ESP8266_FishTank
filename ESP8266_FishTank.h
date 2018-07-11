@@ -162,3 +162,5 @@ String settings_page=
 "            <tr>\r\n"
 "        </table>\r\n"
 "</form>\r\n";
+
+#endif
