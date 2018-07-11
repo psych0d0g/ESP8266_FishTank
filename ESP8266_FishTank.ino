@@ -60,11 +60,12 @@ String settingsPage(){
 String getData(){
   DynamicJsonBuffer jsonBuffer;
   JsonObject& json = jsonBuffer.createObject();
-
-  json["fishtankdata"]["temperature"] = tempInt;
-  json["fishtankdata"]["fan_pwm"] = command;
-  json["fishtanksettings"]["desired_temp"] = desired_temp;
-  json["fishtanksettings"]["temp_offset"] = maxTdiff;
+  JsonObject& fishtankdata = json.createNestedObject("fishtankdata");
+    fishtankdata["temperature"] = tempInt;
+    fishtankdata["fan_pwm"] = command;
+  JsonObject& fishtanksettings = json.createNestedObject("fishtanksettings");
+    fishtanksettings["desired_temp"] = desired_temp;
+    fishtanksettings["temp_offset"] = maxTdiff;
 
   String output;
   json.printTo(output);
