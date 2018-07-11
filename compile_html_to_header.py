@@ -50,6 +50,7 @@ def raw2arduino():
                 else:
                         o.write('\\r\\n";\n')
         s.close()
+	o.write('\n#endif\n')
 	o.close()
 	print("Done!")
 
