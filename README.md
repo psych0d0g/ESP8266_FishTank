@@ -3,7 +3,9 @@ IOT ESP8266 Fishtank Controller
 
 ESP8266 Powered Fishtank controller
 
-Tested on LoLin NodeMCU 1.0 ESP8266 Board
+Tested and developed on LoLin NodeMCU 1.0 ESP8266 Board
+
+PLEASE NOTE: this software is licensed under the MIT license, but used librarys might use other licenses.
 
 ### Simplified Schematics
 
