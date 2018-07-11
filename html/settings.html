@@ -1,0 +1,46 @@
+<html>
+    <head>
+      <style>
+        body { background-color: #202020; }
+        h2, td, a { color: #95A5A6; }
+        p { color: white; }
+      </style>
+      <title>Aquarium Controller</title>
+      <meta charset="utf-8">
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script type="text/javascript">
+        $(document).ready(function () {
+            function updateGauges(){ 
+	            $.ajax({ 
+	            	type: 'GET', 
+	            	contentType: 'application/json; charset=utf-8',
+	            	url: '/fishtank.json', 
+	            	data: {}, 
+	            	dataType: 'json',
+	            	success: function (data) { 
+	                	 document.getElementById("desired_temp").value=data.fishtanksettings.desired_temp;
+	                	 document.getElementById("temp_offset").value=data.fishtanksettings.temp_offset;
+	            	}
+	          	});
+          	}
+        })
+      </script>
+    </head>
+    <body>
+        <h2>Aquarium Controller</h2>
+        <form method="post" action="">
+        <table>
+            <tr>
+                <td align="left"><strong>Desired water temperature [C]</strong></td>
+                <td align="left"><input id="desired_temp" type="text" name="temp" value="" /></td>
+            </tr>
+            <tr>
+                <td align="left"><strong>Maximum okay offset [C]</strong></td>
+                <td align="left"><input id="temp_offset" type="text" name="offset" value="" /></td>
+            </tr>
+            <tr>
+                <td align="left"><input type="submit" name="submit" value="Apply" /></td>
+                <td align="left"></td>
+            <tr>
+        </table>
+</form>
