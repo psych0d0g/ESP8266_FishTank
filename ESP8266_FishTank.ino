@@ -58,17 +58,17 @@ String settingsPage(){
 }
 
 String getData(){
-  String page = "{";
-  page += "\"fishtankdata\": {";
-  page += "  \"temperature\": \"";
-  page += tempInt;
-  page += "\",";
-  page += "  \"fan_pwm\": \"";
-  page += command;
-  page += "\"";
-  page += "}";
-  page += "}";
-  return page;
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& json = jsonBuffer.createObject();
+
+  json["fishtankdata"]["temperature"] = tempInt;
+  json["fishtankdata"]["fan_pwm"] = command;
+  json["fishtanksettings"]["desired_temp"] = desired_temp;
+  json["fishtanksettings"]["temp_offset"] = maxTdiff;
+
+  String output;
+  json.printTo(output);
+  return output;
 }
 
 void handleRoot(){ 
