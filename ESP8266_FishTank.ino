@@ -1,94 +1,93 @@
-#include "ESP8266_FishTank.h"
-#include <ArduinoJson.h>
 #include <FS.h>
-#include "thermistor.h"
-#include "HardwareSerial.h"
+#include <DNSServer.h>
 #include <ESP8266WiFi.h>
 #include <WiFiManager.h>
-#include <DNSServer.h>
 #include <ESP8266WebServer.h>
+#include <ArduinoJson.h>
 #include <PID_v1.h>
+#include "ESP8266_FishTank.h"
+#include "html.h"
+#include "thermistor.h"
+#include "HardwareSerial.h"
 
 // pin Definitions
 #define NTC_PIN A0
 #define FAN_PIN D8
 
-// Wifi Setup
-#define host "Fishtank"
-
-#define INTERVAL 5000   // time between reads
-unsigned long lastRead = 0;
-
-int avgLoop = 5;    //temp measurement loops
-
-//PID parameters. I'm using defaults with quite nice results
-double kp=20;   //proportional parameter
-double ki=5;   //integral parameter
-double kd=1;   //derivative parameter
-
-//Minimum and Maximum PWM command, according fan specs and noise level required
-double commandMin = 0;
-double commandMax = 250;
-
-double desired_temp, tempInt, maxTdiff, avgInt, tempDiff, command;
+Config config; 
 
 //init PID
-PID myPID(&tempDiff, &command, &maxTdiff,kp,ki,kd, REVERSE);
+PID myPID(&tempDiff, &fan_pwm, &config.temp_offset,kp,ki,kd, REVERSE);
 
-boolean first = true;
-
+//init webserver
 ESP8266WebServer server ( 80 );
 
-
-// Thermistor object
+// Init Thermistor object
 THERMISTOR thermistor(NTC_PIN,        // Analog pin
                       100000,          // Nominal resistance at 25 ºC
                       3950,           // thermistor's beta coefficient
                       97500);         // Value of the series resistor
 
-// Global temperature reading
-float temp;
+// Handle request for root document ("/")
+void rootHandler(){ 
+  server.send ( 200, "text/html", indexPage() );
+}
 
 String indexPage(){
   return main_page;
 }
 
+// Handle request for settings document ("/settings")
+void SettingsHandler(){ 
+  server.send ( 200, "text/html", settingsPage() );
+}
+
 String settingsPage(){
+  if ( server.hasArg("submit") ) {
+    DynamicJsonBuffer jsonBuffer;
+    JsonObject& json = jsonBuffer.createObject();
+    for (uint8_t i = 0; i < server.args(); i++) {
+      if (server.argName(i) != "submit") {
+          json[server.argName(i)] = server.arg(i);
+      }
+    }
+    saveConfig(json);
+  }
   return settings_page;
 }
 
-String getData(){
+// Handle request for jsonapi document ("/fishtank.json")
+void apiHandler(){ 
+  server.send ( 200, "application/json", jsonApiHandler() );
+}
+
+String jsonApiHandler(){
   DynamicJsonBuffer jsonBuffer;
   JsonObject& json = jsonBuffer.createObject();
+
   JsonObject& fishtankdata = json.createNestedObject("fishtankdata");
     fishtankdata["temperature"] = tempInt;
-    fishtankdata["fan_pwm"] = command;
+    fishtankdata["fan_pwm"] = fan_pwm;
   JsonObject& fishtanksettings = json.createNestedObject("fishtanksettings");
-    fishtanksettings["desired_temp"] = desired_temp;
-    fishtanksettings["temp_offset"] = maxTdiff;
+    fishtanksettings["desired_temp"] = config.desired_temp;
+    fishtanksettings["temp_offset"] = config.temp_offset;
 
   String output;
   json.printTo(output);
   return output;
 }
 
-void handleRoot(){ 
-  server.send ( 200, "text/html", indexPage() );
-}
-
-void handleSettings(){ 
-  server.send ( 200, "text/html", settingsPage() );
-}
-
-void handleData(){ 
-  server.send ( 200, "application/json", getData() );
-}
-
+/** Temperature handler
+  * Compages current temp with desired temp every 5 seconds 
+  * (Configure via INTERVAL variable in header)
+  * taking the max allowed offset into account.
+  * generate a proper PID calculated PWM fan speed value
+  */
 void handleTempLoop(){
   if (millis() - lastRead >= INTERVAL){  // if INTERVAL has passed
     lastRead = millis(); 
 
-    //this loop is a trick to get a more stable temp, under +5v LM35 is quite unprecise...
+    //this loop is a trick to get a more stable temp by averaging over 5 readings (avgLoop in header)
     avgInt = 0;
     for(int i=0; i < avgLoop; i++) {
       double tInt = thermistor.read() / 10.0;
@@ -98,74 +97,64 @@ void handleTempLoop(){
 
     //calculate setpoint (tempDiff)
     tempInt = avgInt / avgLoop;
-    tempDiff = tempInt - desired_temp;
+    tempDiff = tempInt - config.desired_temp;
     if(tempDiff < 0) {
       tempDiff = 0;
     }
     Serial.print("Temp: ");Serial.println(tempInt);
     //process PID
     myPID.Compute();
-    Serial.println(command);
-    //apply PID processed command
-    analogWrite(FAN_PIN, command);
+    Serial.println(fan_pwm);
+    //apply PID processed fan_pwm
+    analogWrite(FAN_PIN, fan_pwm);
   }
 }
 
+/** Config reader handler
+  * Checks if we have a config.json in flash store 
+  * if not, we use default values defined in header
+  * if we have a valid config it reads it and feeds the values
+  * into used variables that makes the controller tick
+  */
 void readConfig() {
-    if (SPIFFS.begin()) {
-    Serial.println("mounted file system");
+  if (SPIFFS.begin()) {
     if (SPIFFS.exists("/config.json")) {
       //file exists, reading and loading
       Serial.println("reading config file");
       File configFile = SPIFFS.open("/config.json", "r");
       if (configFile) {
-        Serial.println("opened config file");
         size_t size = configFile.size();
         // Allocate a buffer to store contents of the file.
         std::unique_ptr<char[]> buf(new char[size]);
-
         configFile.readBytes(buf.get(), size);
         DynamicJsonBuffer jsonBuffer;
         JsonObject& json = jsonBuffer.parseObject(buf.get());
-        json.printTo(Serial);
-        if (json.success()) {
-          Serial.println("\nparsed json");
-          Serial.println("setting custom settings from config");
-          desired_temp = json["desired_temp"];
-          maxTdiff = json["maxTdiff"];
-        } else {
-          Serial.println("failed to load json config");
-        }
+        config.desired_temp = json["desired_temp"];
+        config.temp_offset = json["temp_offset"];
       }
-    } else {
-      Serial.println("No config file, using defaults");
-      Serial.println("desired_temp: 25");
-      Serial.println("max temp diffrence: 0.5");
-      desired_temp = 25.0;
-      maxTdiff = 0.5;
     }
   } else {
     Serial.println("failed to mount FS");
   }
 }
 
-void saveConfig() {
+/** Config save handler
+  * Saves configuration into config.json file in flash
+  */
+void saveConfig(JsonObject& json) {
   Serial.println("saving config");
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject& json = jsonBuffer.createObject();
-
-//  json["desired_temp"] = 
-//  json["maxTdiff"] = 
-
+  json.prettyPrintTo(Serial);
+  
   File configFile = SPIFFS.open("/config.json", "w");
   if (!configFile) {
     Serial.println("failed to open config file for writing");
   }
 
-  json.prettyPrintTo(Serial);
   json.printTo(configFile);
   configFile.close();
+  readConfig();
 }
+
 /**
  * setup
  *
@@ -188,14 +177,16 @@ void setup()
   Serial.print ( "IP address: " ); Serial.println ( WiFi.localIP() );
 
   readConfig();
+
   /*return index page which is stored in serverIndex */
-  server.on ( "/", handleRoot );
-  server.on ( "/settings", handleSettings );
-  server.on ( "/fishtank.json", handleData);
+  server.on ( "/", rootHandler );
+  server.on ( "/settings", SettingsHandler );
+  server.on ( "/fishtank.json", apiHandler );
   server.begin();
   Serial.println ( "HTTP server started" );
+
   pinMode(FAN_PIN, OUTPUT);
-  tempDiff = tempInt - desired_temp;
+  tempDiff = tempInt - config.desired_temp;
   if(tempDiff < 0) {
     tempDiff = 0;
   }
