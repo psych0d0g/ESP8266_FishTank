@@ -21,36 +21,36 @@ def lookahead(iterable):
     yield last, False
 
 def raw2arduino():
-        try:
-                os.remove("ESP8266_FishTank.h")
-        except OSError:
-                pass
+    try:
+        os.remove("html.h")
+    except OSError:
+        pass
 	s = open("html/settings.html", 'r')
-        i = open("html/index.html", 'r')
-	o = open("ESP8266_FishTank.h", 'a+')
-        o.write('#ifndef header_h\n')
-        o.write('#define header_h\n\n')
-        o.write('String main_page=\n')
+    i = open("html/index.html", 'r')
+	o = open("html.h", 'a+')
+    o.write('#ifndef html_h\n')
+    o.write('#define html_h\n\n')
+    o.write('String main_page=\n')
 	for line, has_more in lookahead(i.readlines()):
-                line = line.replace( '"', '\\"' )
+        line = line.replace( '"', '\\"' )
 		o.write('"')
 		o.write(line.strip("\n"))
-                if has_more:
-                        o.write('\\r\\n"\n')
-                else:
-                        o.write('\\r\\n";\n')
+        if has_more:
+            o.write('\\r\\n"\n')
+        else:
+            o.write('\\r\\n";\n')
 	i.close()
-        o.write('\nString settings_page=\n')
-        for line, has_more in lookahead(s.readlines()):
-                line = line.replace( '"', '\\"' )
-                o.write('"')
-                o.write(line.strip("\n"))
-                if has_more:
-                        o.write('\\r\\n"\n')
-                else:
-                        o.write('\\r\\n";\n')
-        s.close()
-	o.write('\n#endif\n')
+    o.write('\nString settings_page=\n')
+    for line, has_more in lookahead(s.readlines()):
+        line = line.replace( '"', '\\"' )
+        o.write('"')
+        o.write(line.strip("\n"))
+        if has_more:
+            o.write('\\r\\n"\n')
+        else:
+            o.write('\\r\\n";\n')
+    s.close()
+    o.write('#endif\n')
 	o.close()
 	print("Done!")
 
