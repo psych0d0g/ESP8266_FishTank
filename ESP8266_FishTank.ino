@@ -1,54 +1,28 @@
+
 #include <FS.h>
+#include <Wire.h>
 #include <DNSServer.h>
 #include <ESP8266WiFi.h>
 #include <WiFiManager.h>
 #include <ESP8266WebServer.h>
 #include <ArduinoJson.h>
 #include <PID_v1.h>
+//#include <MQTT.h>
 #include "ESP8266_FishTank.h"
 #include "html.h"
-#include "thermistor.h"
+//#include "thermistor.h"
 #include "HardwareSerial.h"
 #include "Adafruit_SSD1306.h"
+#include "Adafruit_MLX90614.h"
 
-// pin Definitions
-#define NTC_PIN A0
-#define FAN_PIN D8
+Adafruit_SSD1306 display(OLED_RESET);
 
-#define OLED_MOSI  D1
-#define OLED_CLK   D0
-#define OLED_DC    D6
-#define OLED_CS    D4
-#define OLED_RESET D5
-
-Adafruit_SSD1306 display(OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
-
-#define NUMFLAKES 10
-#define XPOS 0
-#define YPOS 1
-#define DELTAY 2
-
-#define LOGO16_GLCD_HEIGHT 16 
-#define LOGO16_GLCD_WIDTH  16 
-static const unsigned char PROGMEM logo16_glcd_bmp[] =
-{ B00000000, B11000000,
-  B00000001, B11000000,
-  B00000001, B11000000,
-  B00000011, B11100000,
-  B11110011, B11100000,
-  B11111110, B11111000,
-  B01111110, B11111111,
-  B00110011, B10011111,
-  B00011111, B11111100,
-  B00001101, B01110000,
-  B00011011, B10100000,
-  B00111111, B11100000,
-  B00111111, B11110000,
-  B01111100, B11110000,
-  B01110000, B01110000,
-B00000000, B00110000 };
+Adafruit_MLX90614 mlx = Adafruit_MLX90614();
 
 Config config; 
+
+//WiFiClient net;
+//MQTTClient client; 
 
 //init PID
 PID myPID(&tempDiff, &fan_pwm, &config.temp_offset,kp,ki,kd, REVERSE);
@@ -56,11 +30,12 @@ PID myPID(&tempDiff, &fan_pwm, &config.temp_offset,kp,ki,kd, REVERSE);
 //init webserver
 ESP8266WebServer server ( 80 );
 
+
 // Init Thermistor object
-THERMISTOR thermistor(NTC_PIN,        // Analog pin
-                      100000,          // Nominal resistance at 25 ºC
-                      3950,           // thermistor's beta coefficient
-                      97500);         // Value of the series resistor
+//THERMISTOR thermistor(NTC_PIN,        // Analog pin
+//                      100000,          // Nominal resistance at 25 ºC
+//                      3950,           // thermistor's beta coefficient
+//                      97500);         // Value of the series resistor
 
 // Handle request for root document ("/")
 void rootHandler(){ 
@@ -69,19 +44,6 @@ void rootHandler(){
 
 String indexPage(){
   return main_page;
-}
-
-void displaySetup() {
-  // by default, we'll generate the high voltage from the 3.3v line internally! (neat!)
-  display.begin(SSD1306_SWITCHCAPVCC);
-  // init done
-  
-  // Show image buffer on the display hardware.
-  // Since the buffer is intialized with an Adafruit splashscreen
-  // internally, this will display the splashscreen.
-  //display.display();
-  //delay(2000);
-  display.clearDisplay();
 }
 
 // Handle request for settings document ("/settings")
@@ -124,6 +86,19 @@ String jsonApiHandler(){
   return output;
 }
 
+void displaySetup() {
+  // by default, we'll generate the high voltage from the 3.3v line internally! (neat!)
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3c);
+  // init done
+  
+  // Show image buffer on the display hardware.
+  // Since the buffer is intialized with an Adafruit splashscreen
+  // internally, this will display the splashscreen.
+  //display.display();
+  //delay(2000);
+  display.clearDisplay();
+}
+
 /** Temperature handler
   * Compages current temp with desired temp every 5 seconds 
   * (Configure via INTERVAL variable in header)
@@ -131,9 +106,9 @@ String jsonApiHandler(){
   * generate a proper PID calculated PWM fan speed value
   */
 void handleTempLoop(){
-  if (millis() - lastRead >= INTERVAL){  // if INTERVAL has passed
-    lastRead = millis(); 
-
+  if (millis() - lastReadTemp >= INTERVAL){  // if INTERVAL has passed
+    lastReadTemp = millis(); 
+/**
     //this loop is a trick to get a more stable temp by averaging over 5 readings (avgLoop in header)
     avgInt = 0;
     for(int i=0; i < avgLoop; i++) {
@@ -141,18 +116,47 @@ void handleTempLoop(){
       avgInt += tInt;
       delay(100);
     }
-
+*/
     //calculate setpoint (tempDiff)
-    tempInt = avgInt / avgLoop;
+    tempInt = mlx.readObjectTempC();
     tempDiff = tempInt - config.desired_temp;
     if(tempDiff < 0) {
       tempDiff = 0;
     }
-    Serial.print("Temp: ");Serial.println(tempInt);
+
+  Serial.print("Ambient = "); Serial.print(mlx.readAmbientTempC()); 
+  Serial.print("*C\tObject = "); Serial.print(mlx.readObjectTempC()); Serial.println("*C");
+
     //process PID
     myPID.Compute();
     Serial.println(fan_pwm);
-      // text display tests
+   // connectMqtt();
+    //apply PID processed fan_pwm
+   // publishMessage("/fishtank/temperature", String(tempInt));
+    //publishMessage("/fishtank/fan_pwm", String(fan_pwm/250*100));
+    analogWrite(FAN_PIN, fan_pwm);
+  }
+}
+
+void handleWaterLevel() {
+  if (millis() - lastReadLevel >= INTERVAL){  // if INTERVAL has passed
+    lastReadLevel = millis(); 
+    digitalWrite(TRIG_PIN, LOW);
+    delayMicroseconds(2);
+    digitalWrite(TRIG_PIN, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG_PIN, LOW);
+    duration = pulseIn(ECHO_PIN, HIGH);
+    distance = duration*0.034/2;
+    if (distance >= 200 || distance <= 0){
+      Serial.println("Distance Out of range");
+    }
+    Serial.println(distance);
+  }
+}
+
+void handleDisplay() {
+  // text display
   display.setTextSize(1);
   display.setTextColor(WHITE);
   display.setCursor(0,0);
@@ -166,14 +170,16 @@ void handleTempLoop(){
   display.print(fan_pwm/250*100);
   display.println("%");
   display.setTextColor(WHITE);
+  display.setTextColor(WHITE);
+  display.print("Water Level : ");
+  display.setTextColor(BLACK, WHITE); // 'inverted' text
+  display.print(distance);
+  display.println("cm");
+  display.setTextColor(WHITE);
   display.display();
   delay(2000);
   display.clearDisplay();
-    //apply PID processed fan_pwm
-    analogWrite(FAN_PIN, fan_pwm);
-  }
 }
-
 /** Config reader handler
   * Checks if we have a config.json in flash store 
   * if not, we use default values defined in header
@@ -219,6 +225,27 @@ void saveConfig(JsonObject& json) {
   readConfig();
 }
 
+void messageReceived(String &topic, String &payload) {
+  Serial.println("incoming: " + topic + " - " + payload);
+}
+/**
+void connectMqtt() {
+  while (!client.connect("arduino", "try", "try")) {
+    Serial.print(".");
+    delay(1000);
+  }
+
+  client.subscribe("/fishtank/command/maxtemp");
+  client.subscribe("/fishtank/command/maxdiff");
+
+  Serial.print ( "MQTT Connected to: " + String(mqtt_server) );
+}
+
+void publishMessage(String topic, String payload) {
+  client.publish(topic, payload);
+  Serial.println("Published: " + topic + " - " + payload);
+}
+*/
 /**
  * setup
  *
@@ -238,8 +265,12 @@ void setup()
     delay(5000);
   }
 
-  Serial.print ( "IP address: " ); Serial.println ( WiFi.localIP() );
+  Serial.println ( "IP address: " + String(WiFi.localIP()) );
 
+ // client.begin(mqtt_server, net);
+ // client.onMessage(messageReceived);
+  mlx.begin();  
+  //connectMqtt();
   readConfig();
   displaySetup();
   /*return index page which is stored in serverIndex */
@@ -249,7 +280,11 @@ void setup()
   server.begin();
   Serial.println ( "HTTP server started" );
 
+
+
   pinMode(FAN_PIN, OUTPUT);
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
   tempDiff = tempInt - config.desired_temp;
   if(tempDiff < 0) {
     tempDiff = 0;
@@ -268,5 +303,9 @@ void setup()
 void loop()
 {
   handleTempLoop();
+  handleWaterLevel();
+  handleDisplay();
+//  client.subscribe("/fishtank/command/maxtemp");
+//  client.subscribe("/fishtank/command/maxdiff");
   server.handleClient();
 }
