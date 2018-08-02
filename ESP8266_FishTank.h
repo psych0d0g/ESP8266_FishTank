@@ -1,8 +1,18 @@
 #ifndef header_h
 #define header_h
+//#include "system.h"
+
+// pin Definitions
+#define NTC_PIN A0
+#define FAN_PIN D8
+#define TRIG_PIN D6
+#define ECHO_PIN D7
+
+#define OLED_RESET D0
 
 // Wifi Setup
 String host = "Fishtank";
+const char* mqtt_server = "10.10.10.10";
 
 struct Config {
   double desired_temp = 25;
@@ -10,7 +20,6 @@ struct Config {
 };
 
 int INTERVAL = 5000;   // time between reads
-unsigned long lastRead = 0;
 
 int avgLoop = 5;    //temp measurement loops
 
@@ -26,4 +35,5 @@ double commandMax = 250;
 boolean first = true;
 double temp, tempInt, avgInt, tempDiff, fan_pwm;
 
+long duration, distance, lastReadTemp, lastReadLevel;
 #endif
