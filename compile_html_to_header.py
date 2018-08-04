@@ -22,12 +22,12 @@ def lookahead(iterable):
 
 def raw2arduino():
     try:
-        os.remove("html.h")
+        os.remove("lib/html.h")
     except OSError:
         pass
 	s = open("html/settings.html", 'r')
     i = open("html/index.html", 'r')
-	o = open("html.h", 'a+')
+	o = open("lib/html.h", 'a+')
     o.write('#ifndef html_h\n')
     o.write('#define html_h\n\n')
     o.write('String main_page=\n')
