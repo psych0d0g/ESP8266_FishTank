@@ -23,7 +23,7 @@ void setupMqtt() {
   client.subscribe("cmnd/"+host+"/maxtemp");
   client.subscribe("cmnd/"+host+"/maxdiff");
 
-  Serial.print ( "MQTT Connected to: " + String(mqtt_server) );
+  Serial.println ( "MQTT Connected to: " + String(mqtt_server) );
 }
 
 void publishMessage(String topic, String payload) {
