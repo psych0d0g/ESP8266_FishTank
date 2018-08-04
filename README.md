@@ -15,9 +15,10 @@ The full fritzing schematic file can be downloaded [here](https://raw.githubuser
 
 ### Current Features
 
-* Measures Temperature from connected NTC 100k termristor
-* Controlls connected FAN using PID PWM
-* Displays current Temperature and FAN speed on animated ajax gauges in Browser
+* Measures Temperature from connected NTC 100k thermistor or i2c MLX IR Contactless Temp sensor
+* Controls connected FAN using PID PWM
+* Displays current Temperature and FAN speed on animated ajax gauges in Browser or on attached i2c Oled screen
+* Reads connected Ultrasonic Distance sensor to report on water level (WiP)
 
 ### Dependencies
 
