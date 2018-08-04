@@ -6,7 +6,7 @@
 //#define SENSOR_NTC
 // pin Definitions
 // If you use a NTC Sensor instead of i2c based uncomment this and the avgLoop below
-//#define NTC_PIN A0
+#define NTC_PIN A0
 // Pin where you connected the FAN Controlling Transistor
 #define FAN_PIN D8
 //Pin setup for the Ultrasonic Sensor
@@ -14,7 +14,8 @@
 #define ECHO_PIN D7
 
 // Local Hostname (where you want to reach your controller at)
-String host = "Fishtank";
+// Also used for mqtt and wifi AP name (Case sensitive)
+String host = "fishtank";
 //Connect to the following MQTT Server
 const char* mqtt_server = "10.10.10.10";
 
@@ -38,5 +39,5 @@ double temp, tempInt, avgInt, tempDiff, fan_pwm;
 
 
 
-long duration, distance, lastReadTemp, lastReadLevel;
+long duration, distance, lastReadTemp, lastReadLevel, lastSendMqtt, lastUpdateDisplay;
 #endif
