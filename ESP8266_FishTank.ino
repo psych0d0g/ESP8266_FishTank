@@ -24,14 +24,12 @@ void setup()
   WiFiManager wifiManager;
 
   wifiManager.setBreakAfterConfig(true);
-  if (!wifiManager.autoConnect("ESP_FishTank")) {
+  if (!wifiManager.autoConnect("ESP_"+host)) {
     Serial.println("failed to connect, we will fire up config mode");
     delay(3000);
-    wifiManager.startConfigPortal("ESP_FishTank");
+    wifiManager.startConfigPortal("ESP_"+host);
     delay(5000);
   }
-
-  Serial.println ( "IP address: " + String(WiFi.localIP()) );
 
   setupSensors();
   readConfig();
