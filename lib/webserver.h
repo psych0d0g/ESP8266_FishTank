@@ -1,5 +1,5 @@
-#ifndef wifi_setup_h
-#define wifi_setup_h
+#ifndef webserver_h
+#define webserver_h
 
 #include <Arduino.h>
 
@@ -11,7 +11,6 @@
 
 //init webserver
 ESP8266WebServer server ( 80 );
-
 
 String indexPage(){
   return main_page;
@@ -60,5 +59,13 @@ void SettingsHandler(){
 // Handle request for jsonapi document ("/fishtank.json")
 void apiHandler(){ 
   server.send ( 200, "application/json", jsonApiHandler() );
+}
+
+void webserverSetup(){
+  server.on ( "/", rootHandler );
+  server.on ( "/settings", SettingsHandler );
+  server.on ( "/fishtank.json", apiHandler );
+  server.begin();
+  Serial.println ( "HTTP server started" );
 }
 #endif
