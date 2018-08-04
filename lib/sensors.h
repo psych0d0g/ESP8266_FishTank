@@ -11,11 +11,9 @@
 #if not (defined SENSOR_MLX && defined SENSOR_NTC)
   #ifdef SENSOR_MLX
     #include <Adafruit_MLX90614.h>
-
   #elif defined SENSOR_NTC
-    #include "thermistor.h"
-    // Init Thermistor object
-
+    #include "HardwareSerial.h"
+    #include <thermistor.h>
   #endif
 #else
   #error 'please use either NTC or MLX thx ;-)'
@@ -36,6 +34,21 @@ PID myPID(&tempDiff, &fan_pwm, &config.temp_offset,kp,ki,kd, REVERSE);
                         97500);         // Value of the series resistor
 #endif
 
+void setupSensors() {
+  #ifdef SENSOR_MLX
+    mlx.begin();  
+  #endif
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+  tempDiff = tempInt - config.desired_temp;
+  if(tempDiff < 0) {
+    tempDiff = 0;
+  }
+
+  //turn the PID on
+  myPID.SetMode(AUTOMATIC);
+  myPID.SetOutputLimits(commandMin, commandMax);
+}
 
 /** Temperature handler
   * Compages current temp with desired temp every 5 seconds 
