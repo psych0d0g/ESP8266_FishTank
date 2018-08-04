@@ -2,7 +2,8 @@
 #define user_config_h
 
 // Sensor can either be MLX or NTC
-#define SENSOR MLX
+#define SENSOR_MLX
+//#define SENSOR_NTC
 // pin Definitions
 // If you use a NTC Sensor instead of i2c based uncomment this and the avgLoop below
 //#define NTC_PIN A0
