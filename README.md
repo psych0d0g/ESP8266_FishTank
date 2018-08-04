@@ -19,6 +19,7 @@ The full fritzing schematic file can be downloaded [here](https://raw.githubuser
 * Controls connected FAN using PID PWM
 * Displays current Temperature and FAN speed on animated ajax gauges in Browser or on attached i2c Oled screen
 * Reads connected Ultrasonic Distance sensor to report on water level (WiP)
+* publishes sensor readings to a defined MQTT Server
 
 ### Dependencies
 
