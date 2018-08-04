@@ -20,8 +20,8 @@ void setupMqtt() {
     delay(1000);
   }
 
-  client.subscribe("/fishtank/command/maxtemp");
-  client.subscribe("/fishtank/command/maxdiff");
+  client.subscribe("cmnd/"+host+"/maxtemp");
+  client.subscribe("cmnd/"+host+"/maxdiff");
 
   Serial.print ( "MQTT Connected to: " + String(mqtt_server) );
 }
@@ -32,13 +32,14 @@ void publishMessage(String topic, String payload) {
 }
 
 void handleMQTT(){
-  if (millis() - lastReadTemp >= INTERVAL){  // if INTERVAL has passed
-    lastReadTemp = millis(); 
-    publishMessage("/fishtank/status/temp", String(tempInt));
-    publishMessage("/fishtank/status/pwm", String(fan_pwm/250*100));
-    publishMessage("/fishtank/status/waterlvl", String(distance));
-    client.subscribe("/fishtank/command/maxtemp");
-    client.subscribe("/fishtank/command/maxdiff");
+  if (millis() - lastSendMqtt >= INTERVAL){  // if INTERVAL has passed
+    lastSendMqtt = millis(); 
+    setupMqtt();
+    publishMessage("stat/"+host+"/temp", String(tempInt));
+    publishMessage("stat/"+host+"/pwm", String(fan_pwm/250*100));
+    publishMessage("stat/"+host+"/waterlvl", String(distance));
+    client.subscribe("cmnd/"+host+"/maxtemp");
+    client.subscribe("cmnd/"+host+"/maxdiff");
   }
 }
 
