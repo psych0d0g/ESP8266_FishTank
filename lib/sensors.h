@@ -7,13 +7,18 @@
 #include "config_schema.h" 
 #include "user_config.h"
 
-#if SENSOR == MLX
-  #include <Adafruit_MLX90614.h>
+//make sure only one sensor at a time
+#if not (defined SENSOR_MLX && defined SENSOR_NTC)
+  #ifdef SENSOR_MLX
+    #include <Adafruit_MLX90614.h>
 
-#elif SENSOR == NTC
-  #include "thermistor.h"
-  // Init Thermistor object
+  #elif defined SENSOR_NTC
+    #include "thermistor.h"
+    // Init Thermistor object
 
+  #endif
+#else
+  #error 'please use either NTC or MLX thx ;-)'
 #endif
 
 
@@ -22,9 +27,9 @@ PID myPID(&tempDiff, &fan_pwm, &config.temp_offset,kp,ki,kd, REVERSE);
 
 
 
-#if SENSOR == MLX
+#ifdef SENSOR_MLX
   Adafruit_MLX90614 mlx = Adafruit_MLX90614();
-#elif SENSOR == NTC
+#elif defined SENSOR_NTC
   THERMISTOR thermistor(NTC_PIN,        // Analog pin
                         100000,          // Nominal resistance at 25 ºC
                         3950,           // thermistor's beta coefficient
@@ -41,7 +46,7 @@ PID myPID(&tempDiff, &fan_pwm, &config.temp_offset,kp,ki,kd, REVERSE);
 void handleTempLoop(){
   if (millis() - lastReadTemp >= INTERVAL){  // if INTERVAL has passed
     lastReadTemp = millis(); 
-    #if SENSOR == NTC
+    #ifdef SENSOR_NTC
       //this loop is a trick to get a more stable temp by averaging over 5 readings (avgLoop in header)
       avgInt = 0;
       for(int i=0; i < avgLoop; i++) {
@@ -50,7 +55,7 @@ void handleTempLoop(){
         delay(100);
       }
       tempInt = avgInt/avgLoop;
-    #elif SENSOR == MLX
+    #elif defined SENSOR_MLX
       tempInt = mlx.readObjectTempC();
     #endif
 
