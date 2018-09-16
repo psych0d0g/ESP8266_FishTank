@@ -10,7 +10,9 @@
 #include "lib/display.h"
 #include "lib/sensors.h"
 #include "lib/webserver.h"
+#include "lib/led_control.h"
 #include "lib/mqtt_handler.h"
+#include "lib/time_handler.h"
 
 /**
  * setup
@@ -30,7 +32,10 @@ void setup()
     wifiManager.startConfigPortal("ESP_FishTank");
     delay(5000);
   }
-
+  Wire.begin();
+  Wire.setClock(400000);
+  setupNTP();
+  setupPWM();
   setupSensors();
   readConfig();
   displaySetup();
@@ -48,9 +53,13 @@ void setup()
  */
 void loop()
 {
+  loopNTP();
+  handleLedState();
   handleTempLoop();
   handleWaterLevel();
   handleDisplay();
-  handleMQTT();
+  //handleMQTT();
+  //Serial.println(currentTime("local"));
+  compute(calculateDayOfYear(currentTime("local")));
   server.handleClient();
 }

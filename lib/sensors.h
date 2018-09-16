@@ -83,17 +83,15 @@ void handleTempLoop(){
     //process PID
     myPID.Compute();
     Serial.println(fan_pwm);
-   // connectMqtt();
-    //apply PID processed fan_pwm
-   // publishMessage("/fishtank/temperature", String(tempInt));
-    //publishMessage("/fishtank/fan_pwm", String(fan_pwm/250*100));
+    sensorReading[0].value = tempInt;
+    sensorReading[2].value = fan_pwm;
     analogWrite(FAN_PIN, fan_pwm);
   }
 }
 
 
 void handleWaterLevel() {
-  if (millis() - lastReadLevel >= INTERVAL){  // if INTERVAL has passed
+  if (millis() - lastReadLevel >= WATER_INTERVAL){  // if INTERVAL has passed
     lastReadLevel = millis(); 
     digitalWrite(TRIG_PIN, LOW);
     delayMicroseconds(2);
@@ -106,6 +104,7 @@ void handleWaterLevel() {
       Serial.println("Distance Out of range");
     }
     Serial.println(distance);
+    sensorReading[1].value = distance;
   }
 }
 

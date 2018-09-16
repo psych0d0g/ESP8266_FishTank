@@ -2,44 +2,66 @@
 #define mqtt_handler_h
 
 #include <Arduino.h>
-#include <MQTT.h>
 #include <ESP8266WiFi.h>
+#include <PubSubClient.h>
 
 WiFiClient net;
-MQTTClient client; 
+PubSubClient client(net); 
 
-void messageReceived(String &topic, String &payload) {
-  Serial.println("incoming: " + topic + " - " + payload);
+
+void callback(char* topic, byte* payload, unsigned int length) {
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] ");
+  for (unsigned int i = 0; i < length; i++) {
+    Serial.print((char)payload[i]);
+  }
+  Serial.println();
 }
 
 void setupMqtt() {
-  client.begin(mqtt_server, net);
-  client.onMessage(messageReceived);
-  while (!client.connect("arduino", "try", "try")) {
-    Serial.print(".");
-    delay(1000);
-  }
-
-  client.subscribe("cmnd/"+host+"/maxtemp");
-  client.subscribe("cmnd/"+host+"/maxdiff");
-
-  Serial.println ( "MQTT Connected to: " + String(mqtt_server) );
+  client.setServer(mqtt_server, 1883);
+  client.setCallback(callback);
 }
 
-void publishMessage(String topic, String payload) {
-  client.publish(topic, payload);
-  Serial.println("Published: " + topic + " - " + payload);
+void reconnect() {
+  // Loop until we're reconnected
+  while (!client.connected()) {
+    Serial.print("Attempting MQTT connection...");
+    // Attempt to connect
+    if (client.connect(host.c_str())) {
+      Serial.println("connected");
+      // Once connected, publish an announcement...
+      client.publish("outTopic", "hello world");
+      // ... and resubscribe
+      client.subscribe("inTopic");
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
+      // Wait 5 seconds before retrying
+      delay(5000);
+    }
+  }
 }
 
 void handleMQTT(){
-  if (millis() - lastSendMqtt >= INTERVAL){  // if INTERVAL has passed
+  if (!client.connected()) {
+    reconnect();
+  }
+  client.loop();
+  if (millis() - lastSendMqtt >= MQTT_INTERVAL){  // if INTERVAL has passed
     lastSendMqtt = millis(); 
-    setupMqtt();
-    publishMessage("stat/"+host+"/temp", String(tempInt));
-    publishMessage("stat/"+host+"/pwm", String(fan_pwm/250*100));
-    publishMessage("stat/"+host+"/waterlvl", String(distance));
-    client.subscribe("cmnd/"+host+"/maxtemp");
-    client.subscribe("cmnd/"+host+"/maxdiff");
+    for (unsigned int i = 0; i < sizeof(sensorReading)/sizeof(sensorReading[0]); i++ ) {
+      char topic[String("stat/"+host+"/"+sensorReading[i].sensor).length() + 1];
+      char sensor[String(sensorReading[i].value).length() + 1];
+      String("stat/"+host+"/"+sensorReading[i].sensor).toCharArray(topic, sizeof(topic));
+      String(sensorReading[i].value).toCharArray(sensor, sizeof(sensor));
+      Serial.print(topic);
+      Serial.print(":");
+      Serial.println(sensor );
+      client.publish(topic, sensor);
+    }
   }
 }
 
