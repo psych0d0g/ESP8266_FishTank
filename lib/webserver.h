@@ -18,8 +18,8 @@ String indexPage(){
 
 String settingsPage(){
   if ( server.hasArg("submit") ) {
-    DynamicJsonBuffer jsonBuffer;
-    JsonObject& json = jsonBuffer.createObject();
+    DynamicJsonDocument json(1024);
+    //JsonObject json = doc.createObject();
     for (uint8_t i = 0; i < server.args(); i++) {
       if (server.argName(i) != "submit") {
           json[server.argName(i)] = server.arg(i);
@@ -31,18 +31,19 @@ String settingsPage(){
 }
 
 String jsonApiHandler(){
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject& json = jsonBuffer.createObject();
+  DynamicJsonDocument json(1024);
+  //JsonObject json = doc.createObject();
 
-  JsonObject& fishtankdata = json.createNestedObject("fishtankdata");
+  JsonObject fishtankdata = json.createNestedObject("fishtankdata");
     fishtankdata["temperature"] = tempInt;
     fishtankdata["fan_pwm"] = fan_pwm;
-  JsonObject& fishtanksettings = json.createNestedObject("fishtanksettings");
+  JsonObject fishtanksettings = json.createNestedObject("fishtanksettings");
     fishtanksettings["desired_temp"] = config.desired_temp;
     fishtanksettings["temp_offset"] = config.temp_offset;
 
   String output;
-  json.printTo(output);
+  //json.printTo(output);
+  serializeJson(json, output);
   return output;
 }
 
