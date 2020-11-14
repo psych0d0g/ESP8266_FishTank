@@ -42,7 +42,7 @@ void draw_flowbar(float flow) {
   u8g2.drawBox(1, 1, calculateFlowBar(flow), frame_size-2);
   // Int Flowrate value
   u8g2.setFont(u8g2_font_6x10_tf);
-  u8g2.drawStr(frame_size * 1.5, 4, String(flow).c_str());
+  u8g2.drawStr(frame_size * 1.5, 4, String(calculateFlowBar(flow)).c_str());
   u8g2.drawStr(frame_size * 4, 4, "%");
 }
 
@@ -66,10 +66,12 @@ void printOnScreen(double curFlow, int tempA){
   if(curTime >= (sloopTime + 1000))
   {
     sloopTime = curTime;              // Updates cloopTime
+    Wire.setClock(400000L);
     u8g2.clearBuffer();
     draw_flowbar(curFlow);
     draw_temps(tempA);
     u8g2.sendBuffer();
+    Wire.setClock(100000L);
   }
 }
 

@@ -24,6 +24,11 @@ void handleLedState(){
    			printOnSerial("value of i_blue:" + String(i_blue));
     		i_blue--;
         yield();
+        if(i_blue < 8) {
+          pwmController.setChannelPWM(4, 0); // Blue
+          yield();
+          i_blue=0;
+        }
  			}
 			if( i_warm < targetLightWarm ) {
 				pwmController.setChannelPWM(3, i_warm << 4); // Warm White
@@ -57,6 +62,13 @@ void handleLedState(){
    			printOnSerial("value of i_cold:" + String(i_cold));
     		i_cold--;
         yield();
+        if(i_cold < 8) {
+          pwmController.setChannelPWM(0, 0); // Blue
+          yield();
+          pwmController.setChannelPWM(1, 0); // Blue
+          yield();
+          i_cold=0;
+        }
  			}
  			if( i_cold == 0 && i_neutral > 0 ) {
 				pwmController.setChannelPWM(2, i_neutral << 4); // Neutral White
@@ -64,6 +76,11 @@ void handleLedState(){
    			printOnSerial("value of i_neutral:" + String(i_neutral));
     		i_neutral--;
         yield();
+        if(i_neutral < 8) {
+          pwmController.setChannelPWM(2, 0); // Blue
+          yield();
+          i_neutral=0;
+        }
  			}
  			if( i_cold == 0 && i_neutral == 0 && i_warm > 0 ) {
 				pwmController.setChannelPWM(3, i_warm << 4); // Neutral White
@@ -71,6 +88,11 @@ void handleLedState(){
    			printOnSerial("value of i_warm:" + String(i_warm));
     		i_warm--;
         yield();
+        if(i_warm < 8) {
+          pwmController.setChannelPWM(3, 0); // Blue
+          yield();
+          i_warm=0;
+        }
  			}
  			if( i_cold == 0 && i_neutral == 0 && i_blue < targetLightBlue ) {
 				pwmController.setChannelPWM(4, i_blue << 4); // Neutral White

@@ -86,8 +86,13 @@ void handleTempLoop(){
     printOnSerial("Fan PWM:" + String(fan_pwm));
     sensorReading[0].value = tempInt;
     sensorReading[2].value = fan_pwm;
-    pwmController.setChannelPWM(9, fan_pwm*16);
-    pwmController.setChannelPWM(10, fan_pwm*16);
+    if(fan_pwm < 20) {
+      pwmController.setChannelPWM(9, 0);
+      pwmController.setChannelPWM(10, 0);
+    } else {
+      pwmController.setChannelPWM(9, fan_pwm*16);
+      pwmController.setChannelPWM(10, fan_pwm*16);
+    }
   }
 }
 

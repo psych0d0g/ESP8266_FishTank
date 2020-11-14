@@ -33,7 +33,7 @@ void setup()
     delay(5000);
   }
   Wire.begin();
-  Wire.setClock(400000L);
+  Wire.setClock(100000L);
   setupNTP();
   setupPWM();
   setupSensors();
