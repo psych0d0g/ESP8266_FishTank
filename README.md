@@ -23,8 +23,4 @@ The full fritzing schematic file can be downloaded [here](https://raw.githubuser
 
 ### Dependencies
 
-Apart from Standart Libs we require the following:
-
- *   https://github.com/tzapu/WiFiManager
- *   https://github.com/panStamp/thermistor
- *   https://arduinojson.org/ // MAKE SURE U USE MAJOR VERSION 5
+Check Platformio.ini for dependencies
