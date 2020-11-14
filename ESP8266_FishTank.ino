@@ -1,6 +1,5 @@
 #include <ESP8266SSDP.h>
 #include <DNSServer.h>
-//#include <FS.h>
 #include <LittleFS.h>
 #include <Wire.h>
 #include <DNSServer.h>
@@ -9,9 +8,9 @@
 
 #include "lib/user_config.h"
 #include "lib/display.h"
+#include "lib/led_control.h"
 #include "lib/sensors.h"
 #include "lib/webserver.h"
-#include "lib/led_control.h"
 #include "lib/mqtt_handler.h"
 #include "lib/time_handler.h"
 
@@ -34,17 +33,15 @@ void setup()
     delay(5000);
   }
   Wire.begin();
-  Wire.setClock(400000);
+  Wire.setClock(400000L);
   setupNTP();
   setupPWM();
   setupSensors();
   readConfig();
   displaySetup();
   webserverSetup();
-  setupMqtt();
-  /*return index page which is stored in serverIndex */
-  pinMode(FAN_PIN, OUTPUT);
-
+  timerSetup();
+  //setupMqtt();
 }
 
 /**
@@ -58,7 +55,7 @@ void loop()
   handleLedState();
   handleTempLoop();
   handleWaterLevel();
-  handleDisplay();
+  printOnScreen(fan_pwm,tempInt);
   //handleMQTT();
   //Serial.println(currentTime("local"));
   compute(calculateDayOfYear(currentTime("local")));

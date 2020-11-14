@@ -48,6 +48,7 @@ void setupSensors() {
   //turn the PID on
   myPID.SetMode(AUTOMATIC);
   myPID.SetOutputLimits(commandMin, commandMax);
+  pwmController.setChannelPWM(8, 2000);
 }
 
 /** Temperature handler
@@ -78,14 +79,15 @@ void handleTempLoop(){
       tempDiff = 0;
     }
 
-  Serial.print("tObject = "); Serial.print(tempInt); Serial.println("*C");
+    printOnSerial("tObject = "+ String(tempInt) + "*C");
 
     //process PID
     myPID.Compute();
-    Serial.println(fan_pwm);
+    printOnSerial("Fan PWM:" + String(fan_pwm));
     sensorReading[0].value = tempInt;
     sensorReading[2].value = fan_pwm;
-    analogWrite(FAN_PIN, fan_pwm);
+    pwmController.setChannelPWM(9, fan_pwm*16);
+    pwmController.setChannelPWM(10, fan_pwm*16);
   }
 }
 
@@ -101,9 +103,9 @@ void handleWaterLevel() {
     duration = pulseIn(ECHO_PIN, HIGH);
     distance = duration*0.034/2;
     if (distance >= 200 || distance <= 0){
-      Serial.println("Distance Out of range");
+      printOnSerial("Distance Out of range");
     }
-    Serial.println(distance);
+    printOnSerial(String(distance));
     sensorReading[1].value = distance;
   }
 }

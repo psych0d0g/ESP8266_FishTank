@@ -6,7 +6,6 @@
 #include <ArduinoJson.h>
 #include <ESP8266WebServer.h>
 #include "html.h"
-
 #include "config_schema.h" 
 
 //init webserver
@@ -42,7 +41,6 @@ String jsonApiHandler(){
     fishtanksettings["temp_offset"] = config.temp_offset;
 
   String output;
-  //json.printTo(output);
   serializeJson(json, output);
   return output;
 }
@@ -67,6 +65,6 @@ void webserverSetup(){
   server.on ( "/settings", SettingsHandler );
   server.on ( "/fishtank.json", apiHandler );
   server.begin();
-  Serial.println ( "HTTP server started" );
+  printOnSerial( "HTTP server started" );
 }
 #endif

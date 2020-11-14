@@ -20,7 +20,7 @@ void readConfig() {
   if (LittleFS.begin()) {
     if (LittleFS.exists("/config.json")) {
       //file exists, reading and loading
-      Serial.println("reading config file");
+      printOnSerial("reading config file");
       File configFile = LittleFS.open("/config.json", "r");
       if (configFile) {
         size_t size = configFile.size();
@@ -34,7 +34,7 @@ void readConfig() {
       }
     }
   } else {
-    Serial.println("failed to mount FS");
+    printOnSerial("failed to mount FS");
   }
 }
 
@@ -42,12 +42,12 @@ void readConfig() {
   * Saves configuration into config.json file in flash
   */
 void saveConfig(JsonDocument& json) {
-  Serial.println("saving config");
+  printOnSerial("saving config");
   serializeJson(json, Serial);
   
   File configFile = LittleFS.open("/config.json", "w");
   if (!configFile) {
-    Serial.println("failed to open config file for writing");
+    printOnSerial("failed to open config file for writing");
   }
 
   serializeJson(json, configFile);

@@ -21,7 +21,13 @@ void setupNTP(){
 }  
 
 void loopNTP(){
-	timeClient.update();
+  curTime = millis();
+  // Every 1000 milisecond (1 second), print out readings to display
+  if(curTime >= (tloopTime + 300000))
+  {
+    tloopTime = curTime;              // Updates cloopTime
+    timeClient.update();
+  }
 }
 
 long currentTime(String type) {
@@ -139,7 +145,7 @@ void compute(int T) {
 
 		    sunrise_at = previousMidnight(currentTime("local")) + (int)(sunrise*60*60);
 		    sunset_at = previousMidnight(currentTime("local")) + (int)(sunset*60*60);
-		    Serial.print(" sunrise at: ");Serial.print(sunrise_at);Serial.print(" sunset at: ");Serial.println(sunset_at);
+		    printOnSerial(" sunrise at: " + String(sunrise_at) + " sunset at: " + String(sunset_at));
 		}
     }
 }
