@@ -58,6 +58,5 @@ void loop()
   printOnScreen(fan_pwm,tempInt);
   //handleMQTT();
   //Serial.println(currentTime("local"));
-  compute(calculateDayOfYear(currentTime("local")));
   server.handleClient();
 }

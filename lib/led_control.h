@@ -33,6 +33,7 @@ void changeBrightness(boolean mode, String color){
 }
 
 bool isday(){
+  compute(calculateDayOfYear(currentTime("local")));
   if (config.daynight == 0){
     if (sunset_at > 10000 && sunrise_at > 10000 && sunset_at >= currentTime("local") && sunrise_at <= currentTime("local")) {
       return true;

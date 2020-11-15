@@ -50,7 +50,7 @@ sensorReadings sensorReading[] = {
 
 // Update stuff every 5 seconds by default
 unsigned long INTERVAL = 5000;   // time between reads
-unsigned long LED_INTERVAL = 20;   // time between LED updates (infuences the time a sunrise and sunset require to be completed)
+unsigned long LED_INTERVAL = 200;   // time between LED updates (infuences the time a sunrise and sunset require to be completed)
 unsigned long WATER_INTERVAL = 300000;   // time between reads 5 min
 unsigned long MQTT_INTERVAL = 10000;   // time between MQTT publishes
 
