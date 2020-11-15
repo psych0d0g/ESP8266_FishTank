@@ -3,9 +3,18 @@
 
 #include <Arduino.h>
 
+boolean increase = true;
+boolean decrease = false;
+
+
 struct Config {
   double desired_temp = 25;
-  double temp_offset = 0.5;
+  double temp_offset  = 0.5;
+  int desired_cold    = 128;
+  int desired_neutral = 200;
+  int desired_warm    = 180;
+  int desired_blue    = 64;
+  int daynight        = 0;
 };
 
 Config config;
@@ -31,6 +40,11 @@ void readConfig() {
         deserializeJson(json, buf.get());
         config.desired_temp = json["desired_temp"];
         config.temp_offset = json["temp_offset"];
+        config.desired_cold = json["desired_cold"];
+        config.desired_neutral = json["desired_neutral"];
+        config.desired_warm = json["desired_warm"];
+        config.desired_blue = json["desired_blue"];
+        config.daynight = json["daynight"];
       }
     }
   } else {

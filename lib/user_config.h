@@ -12,7 +12,7 @@
 #define TRIG_PIN D6
 #define ECHO_PIN D7
 
-#define DEBUG true
+#define DEBUG false
 
 void printOnSerial(String printstr){
   if (DEBUG == true){
@@ -20,16 +20,18 @@ void printOnSerial(String printstr){
   }
 }
 
+// LED Color to Channel mappings
+int coldwhite[]={0,1};
+int neutralwhite[]={2,3};
+int warmwhite[]={4,5};
+int blue[]={6};
+int uv[]={7};
+
 // Local Hostname (where you want to reach your controller at)
 // Also used for mqtt and wifi AP name (Case sensitive)
 String host = "fishtank";
 //Connect to the following MQTT Server
 const char* mqtt_server = "10.10.10.10";
-
-int targetLightCold    = 128;
-int targetLightNeutral = 200;
-int targetLightWarm    = 180;
-int targetLightBlue    = 64;
 
 TimeChangeRule myDST = {"CEST", Last, Sun, Mar, 2, +120};    // Daylight time = UTC + 2 hours
 TimeChangeRule mySTD = {"CET", Last, Sun, Oct, 3, +60}; // Standard time = UTC +1 hours
@@ -48,7 +50,7 @@ sensorReadings sensorReading[] = {
 
 // Update stuff every 5 seconds by default
 unsigned long INTERVAL = 5000;   // time between reads
-unsigned long LED_INTERVAL = 100;   // time between LED updates (infuences the time a sunrise and sunset require to be completed)
+unsigned long LED_INTERVAL = 20;   // time between LED updates (infuences the time a sunrise and sunset require to be completed)
 unsigned long WATER_INTERVAL = 300000;   // time between reads 5 min
 unsigned long MQTT_INTERVAL = 10000;   // time between MQTT publishes
 

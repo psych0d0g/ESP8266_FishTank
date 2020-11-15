@@ -39,7 +39,7 @@ void draw_flowbar(float flow) {
   // Frame for Flowrate
   u8g2.drawFrame(0, 0, 128, frame_size);
   // Fill Bar for Flowrate
-  u8g2.drawBox(1, 1, calculateFlowBar(flow), frame_size-2);
+  u8g2.drawBox(1, 1, calculateFlowBar(flow)/100*128, frame_size-2);
   // Int Flowrate value
   u8g2.setFont(u8g2_font_6x10_tf);
   u8g2.drawStr(frame_size * 1.5, 4, String(calculateFlowBar(flow)).c_str());

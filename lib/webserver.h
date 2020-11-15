@@ -39,6 +39,11 @@ String jsonApiHandler(){
   JsonObject fishtanksettings = json.createNestedObject("fishtanksettings");
     fishtanksettings["desired_temp"] = config.desired_temp;
     fishtanksettings["temp_offset"] = config.temp_offset;
+    fishtanksettings["desired_cold"] = config.desired_cold;
+    fishtanksettings["desired_neutral"] = config.desired_neutral;
+    fishtanksettings["desired_warm"] = config.desired_warm;
+    fishtanksettings["desired_blue"] = config.desired_blue;
+    fishtanksettings["daynight"] = config.daynight;
 
   String output;
   serializeJson(json, output);

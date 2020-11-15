@@ -10,19 +10,23 @@
       <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
       <script type="text/javascript">
         $(document).ready(function () {
-            function updateGauges(){ 
 	            $.ajax({ 
 	            	type: 'GET', 
 	            	contentType: 'application/json; charset=utf-8',
 	            	url: '/fishtank.json', 
 	            	data: {}, 
 	            	dataType: 'json',
-	            	success: function (data) { 
-	                	 document.getElementById("desired_temp").value=data.fishtanksettings.desired_temp;
-	                	 document.getElementById("temp_offset").value=data.fishtanksettings.temp_offset;
+	            	success: function (data) {
+                  document.getElementById("desired_temp").value=data.fishtanksettings.desired_temp;
+                  document.getElementById("temp_offset").value=data.fishtanksettings.temp_offset;
+                  document.getElementById("desired_cold").value=data.fishtanksettings.desired_cold;
+                  document.getElementById("desired_neutral").value=data.fishtanksettings.desired_neutral;
+                  document.getElementById("desired_warm").value=data.fishtanksettings.desired_warm;
+                  document.getElementById("desired_blue").value=data.fishtanksettings.desired_blue;
+                  document.getElementById("daynight").selectedIndex=data.fishtanksettings.daynight;
+
 	            	}
 	          	});
-          	}
         })
       </script>
     </head>
@@ -32,11 +36,37 @@
         <table>
             <tr>
                 <td align="left"><strong>Desired water temperature [C]</strong></td>
-                <td align="left"><input id="desired_temp" type="text" name="temp" value="" /></td>
+                <td align="left"><input id="desired_temp" type="text" name="desired_temp" value="" /></td>
             </tr>
             <tr>
                 <td align="left"><strong>Maximum okay offset [C]</strong></td>
-                <td align="left"><input id="temp_offset" type="text" name="offset" value="" /></td>
+                <td align="left"><input id="temp_offset" type="text" name="temp_offset" value="" /></td>
+            </tr>
+              <tr>
+                <td align="left"><strong>Max cold White Intensity</strong></td>
+                <td align="left"><input id="desired_cold" type="text" name="desired_cold" value="" /></td>
+            </tr>
+            <tr>
+                <td align="left"><strong>Max neutral White Intensity</strong></td>
+                <td align="left"><input id="desired_neutral" type="text" name="desired_neutral" value="" /></td>
+            </tr>
+                        <tr>
+                <td align="left"><strong>Max warm White Intensity</strong></td>
+                <td align="left"><input id="desired_warm" type="text" name="desired_warm" value="" /></td>
+            </tr>
+            <tr>
+                <td align="left"><strong>Max blue light Intensity</strong></td>
+                <td align="left"><input id="desired_blue" type="text" name="desired_blue" value="" /></td>
+            </tr>
+            <tr>
+                <td align="left"><strong>Day/Night mode</strong></td>
+                <td align="left">
+                  <select name="daynight" id="daynight">
+                    <option value="0">Automatic</option>
+                    <option value="1">Day</option>
+                    <option value="2">Night</option>
+                  </select>
+                </td>
             </tr>
             <tr>
                 <td align="left"><input type="submit" name="submit" value="Apply" /></td>

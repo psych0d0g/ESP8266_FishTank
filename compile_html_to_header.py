@@ -25,16 +25,16 @@ def raw2arduino():
         os.remove("lib/html.h")
     except OSError:
         pass
-	s = open("html/settings.html", 'r')
+    s = open("html/settings.html", 'r')
     i = open("html/index.html", 'r')
-	o = open("lib/html.h", 'a+')
+    o = open("lib/html.h", 'a+')
     o.write('#ifndef html_h\n')
     o.write('#define html_h\n\n')
     o.write('String main_page=\n')
-	for line, has_more in lookahead(i.readlines()):
+    for line, has_more in lookahead(i.readlines()):
         line = line.replace( '"', '\\"' )
-		o.write('"')
-		o.write(line.strip("\n"))
+        o.write('"')
+        o.write(line.strip("\n"))
         if has_more:
             o.write('\\r\\n"\n')
         else:
@@ -51,7 +51,7 @@ def raw2arduino():
             o.write('\\r\\n";\n')
     s.close()
     o.write('#endif\n')
-	o.close()
-	print("Done!")
+    o.close()
+    print("Done!")
 
 raw2arduino()
