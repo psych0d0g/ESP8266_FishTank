@@ -8,16 +8,15 @@ boolean decrease = false;
 
 
 struct Config {
-  double desired_temp = 25;
-  double temp_offset  = 0.5;
-  int desired_cold    = 128;
-  int desired_neutral = 200;
-  int desired_warm    = 180;
-  int desired_blue    = 64;
-  int daynight        = 0;
+  double desired_temp      = 25;
+  double temp_offset       = 0.5;
+  int target_intensity[7]  = { 0,0,0,0,0,0,0 };
+  int current_intensity[7] = { 0,0,0,0,0,0,0 };
+  int daynight             = 0;
 };
 
 Config config;
+
 
 /** Config reader handler
   * Checks if we have a config.json in flash store 
@@ -40,10 +39,13 @@ void readConfig() {
         deserializeJson(json, buf.get());
         config.desired_temp = json["desired_temp"];
         config.temp_offset = json["temp_offset"];
-        config.desired_cold = json["desired_cold"];
-        config.desired_neutral = json["desired_neutral"];
-        config.desired_warm = json["desired_warm"];
-        config.desired_blue = json["desired_blue"];
+        config.target_intensity[0] = json["desired_cold"];
+        config.target_intensity[1] = json["desired_cold"];
+        config.target_intensity[2] = json["desired_neutral"];
+        config.target_intensity[3] = json["desired_neutral"];
+        config.target_intensity[4] = json["desired_warm"];
+        config.target_intensity[5] = json["desired_warm"];
+        config.target_intensity[6] = json["desired_blue"];
         config.daynight = json["daynight"];
       }
     }

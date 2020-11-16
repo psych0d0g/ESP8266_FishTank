@@ -14,24 +14,6 @@ void setupPWM(){
     pwmController.setPWMFrequency(100); // Default is 200Hz, supports 24Hz to 1526Hz
 }
 
-//WiP
-void changeBrightness(boolean mode, String color){
-  if(mode == increase){
-    for (byte channel=0; channel<=(sizeof(color) / sizeof(color[0])); channel++) {
-   //   if (pwmController.getChannelPWM(color[channel]) > ){
-
-   //   }
-      Serial.println("Array Pos:" + String(channel));
-      Serial.println("Array Content: " + String(color[channel]));
-      Serial.println(pwmController.getChannelPWM(color[channel])); // Blue
-      yield();  // take a breather, required for ESP8266
-    }
-  }
-  if(mode == decrease){
-
-  }
-}
-
 bool isday(){
   compute(calculateDayOfYear(currentTime("local")));
   if (config.daynight == 0){
@@ -51,125 +33,72 @@ void handleLedState(){
 	// Only modify White LEDs while in Daylight TimeFrame
 	if (millis() - lastSetLed >= LED_INTERVAL){  // if INTERVAL has passed
     lastSetLed = millis(); 
-    //changeBrightness(increase, "warmwhite");
     if(isday()){
-			if( i_blue > 0 ) {
-				pwmController.setChannelPWM(4, i_blue); // Blue
-				yield();  // take a breather, required for ESP8266
-    		i_blue--;
-        yield();
-        if(i_blue < 2) {
-          pwmController.setChannelPWM(4, 0); // Blue
-          yield();
-          i_blue=0;
+      // Loop through array from High to Low since we assume blue night light is at end of array
+      // this way we can turn down the Blue light first, before increasing white light brightness
+      for (channel=(sizeof(config.target_intensity) / sizeof(int)); channel>0; channel--) {
+        if (channel == (sizeof(config.target_intensity) / sizeof(int))){
+    			if( config.current_intensity[channel] > 0 ) {
+    				pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Blue
+    				yield();  // take a breather, required for ESP8266
+        		config.current_intensity[channel]--;
+            yield();
+            if(config.current_intensity[channel] < 2) {
+              pwmController.setChannelPWM(channel, 0); // Blue
+              yield();
+              config.current_intensity[channel]=0;
+            }
+       			printOnSerial("value of i_blue:" + String(config.current_intensity[channel]));
+     			}
         }
-   			printOnSerial("value of i_blue:" + String(i_blue));
- 			}
-			if( i_warm < config.desired_warm*4 ) {
-				pwmController.setChannelPWM(3, i_warm); // Warm White
-				yield();  // take a breather, required for ESP8266
-    		i_warm++;
-        yield();
-   			printOnSerial("value of i_warm:" + String(i_warm));
- 			}
-      if( i_warm > config.desired_warm*4 ) {
-        pwmController.setChannelPWM(3, i_warm); // Warm White
-        yield();  // take a breather, required for ESP8266
-        i_warm--;
-        yield();
-        printOnSerial("value of i_warm:" + String(i_warm));
-      }
-			if( i_warm == config.desired_warm*4 && i_neutral < config.desired_neutral*4 ) {
-				pwmController.setChannelPWM(2, i_neutral); // Neutral White
-				yield();  // take a breather, required for ESP8266
-    		i_neutral++;
-        yield();
-   			printOnSerial("value of i_neutral:" + String(i_neutral));
- 			}
-      if( i_warm == config.desired_warm*4 && i_neutral > config.desired_neutral*4 ) {
-        pwmController.setChannelPWM(2, i_neutral); // Neutral White
-        yield();  // take a breather, required for ESP8266
-        i_neutral--;
-        yield();
-        printOnSerial("value of i_neutral:" + String(i_neutral));
-      }
- 			if( i_warm == config.desired_warm*4 && i_neutral == config.desired_neutral*4 && i_cold < config.desired_cold*4 ) {
-				pwmController.setChannelPWM(0, i_cold); // Cold White
-				yield();  // take a breather, required for ESP8266
-				pwmController.setChannelPWM(1, i_cold); // Cold White
-				yield();  // take a breather, required for ESP8266
-    		i_cold++;
-        yield();
-   			printOnSerial("value of i_cold:" + String(i_cold));
- 			}
-      if( i_warm == config.desired_warm*4 && i_neutral == config.desired_neutral*4 && i_cold > config.desired_cold*4 ) {
-        pwmController.setChannelPWM(0, i_cold); // Cold White
-        yield();  // take a breather, required for ESP8266
-        pwmController.setChannelPWM(1, i_cold); // Cold White
-        yield();  // take a breather, required for ESP8266
-        i_cold--;
-        yield();
-        printOnSerial("value of i_cold:" + String(i_cold));
+        // Increase Brightness of channel if desired brightness was set higher
+		    if( config.current_intensity[channel] < config.target_intensity[channel]*4 ) {
+  				pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Warm White
+  				yield();  // take a breather, required for ESP8266
+      		config.current_intensity[channel]++;
+          yield();
+     			printOnSerial("value of channel "+String(channel)+":" + String(config.current_intensity[channel]));
+   			}
+        // Decrease Brightness of channel if desired brightness was set lower
+        if( config.current_intensity[channel] > config.target_intensity[channel]*4 ) {
+          pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Warm White
+          yield();  // take a breather, required for ESP8266
+          config.current_intensity[channel]--;
+          yield();
+          printOnSerial("value of channel "+String(channel)+":" + String(config.current_intensity[channel]));
+        }
       }
 		} else {
-			if( i_cold > 0 ) {
-				pwmController.setChannelPWM(0, i_cold); // Cold White
-				yield();  // take a breather, required for ESP8266
-				pwmController.setChannelPWM(1, i_cold); // Cold White
-				yield();  // take a breather, required for ESP8266
-    		i_cold--;
-        yield();
-        if(i_cold < 2) {
-          pwmController.setChannelPWM(0, 0); // Blue
-          yield();
-          pwmController.setChannelPWM(1, 0); // Blue
-          yield();
-          i_cold=0;
+      // Loop through array forward for night mode, turn down white, before turning up blue
+      for (channel=0; channel<(sizeof(config.target_intensity) / sizeof(int)); channel++) {
+        if (channel < (sizeof(config.target_intensity) / sizeof(int))){
+          if( config.current_intensity[channel] > 0 ) {
+            pwmController.setChannelPWM(channel, config.current_intensity[channel]); // all diffrent non blue channels
+            yield();  // take a breather, required for ESP8266
+            config.current_intensity[channel]--;
+            yield();
+            if(config.current_intensity[channel] < 2) {
+              pwmController.setChannelPWM(channel, 0); // whites
+              yield();
+              config.current_intensity[channel]=0;
+            }
+            printOnSerial("value of channel "+String(channel)+":" + String(config.current_intensity[channel]));
+          }
         }
-   			printOnSerial("value of i_cold:" + String(i_cold));
- 			}
- 			if( i_cold == 0 && i_neutral > 0 ) {
-				pwmController.setChannelPWM(2, i_neutral); // Neutral White
-				yield();  // take a breather, required for ESP8266
-    		i_neutral--;
-        yield();
-        if(i_neutral < 2) {
-          pwmController.setChannelPWM(2, 0); // Blue
+        if( config.current_intensity[channel] < config.target_intensity[channel]*4 ) {
+          pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Probably Blue and UV
+          yield();  // take a breather, required for ESP8266
+          config.current_intensity[channel]++;
           yield();
-          i_neutral=0;
+          printOnSerial("value of channel "+String(channel)+":" + String(config.current_intensity[channel]));
         }
-   			printOnSerial("value of i_neutral:" + String(i_neutral));
- 			}
- 			if( i_cold == 0 && i_neutral == 0 && i_warm > 0 ) {
-				pwmController.setChannelPWM(3, i_warm); // Neutral White
-				yield();  // take a breather, required for ESP8266
-    		i_warm--;
-        yield();
-        if(i_warm < 2) {
-          pwmController.setChannelPWM(3, 0); // Blue
+        if( config.current_intensity[channel] > config.target_intensity[channel]*4 ) {
+          pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Probably Blue and UV
+          yield();  // take a breather, required for ESP8266
+          config.current_intensity[channel]--;
           yield();
-          i_warm=0;
+          printOnSerial("value of channel "+String(channel)+":" + String(config.current_intensity[channel]));
         }
-   			printOnSerial("value of i_warm:" + String(i_warm));
- 			}
-      if( i_cold == 0 && i_neutral == 0 && i_blue < config.desired_blue*4 ) {
-        pwmController.setChannelPWM(4, i_blue); // Neutral White
-        yield();  // take a breather, required for ESP8266
-        i_blue++;
-        yield();
-        printOnSerial("value of i_blue:" + String(i_blue));
-      }
-      if( i_cold == 0 && i_neutral == 0 && i_blue > config.desired_blue*4 ) {
-        pwmController.setChannelPWM(4, i_blue); // Neutral White
-        yield();  // take a breather, required for ESP8266
-        i_blue--;
-        yield();
-        if(i_blue < 2) {
-          pwmController.setChannelPWM(4, 0); // Blue
-          yield();
-          i_blue=0;
-        }
-        printOnSerial("value of i_blue:" + String(i_blue));
       }
 		}
 	}
