@@ -31,34 +31,34 @@ bool isday(){
 
 void handleLedState(){
 	// Only modify White LEDs while in Daylight TimeFrame
-	if (millis() - lastSetLed >= LED_INTERVAL){  // if INTERVAL has passed
+  if (millis() - lastSetLed >= LED_INTERVAL){  // if INTERVAL has passed
     lastSetLed = millis(); 
     if(isday()){
       // Loop through array from High to Low since we assume blue night light is at end of array
       // this way we can turn down the Blue light first, before increasing white light brightness
       for (channel=(sizeof(config.target_intensity) / sizeof(int)); channel>0; channel--) {
         if (channel == (sizeof(config.target_intensity) / sizeof(int))){
-    			if( config.current_intensity[channel] > 0 ) {
-    				pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Blue
-    				yield();  // take a breather, required for ESP8266
-        		config.current_intensity[channel]--;
+          if( config.current_intensity[channel] > 0 ) {
+            pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Blue
+            yield();  // take a breather, required for ESP8266
+            config.current_intensity[channel]--;
             yield();
             if(config.current_intensity[channel] < 2) {
               pwmController.setChannelPWM(channel, 0); // Blue
               yield();
               config.current_intensity[channel]=0;
             }
-       			printOnSerial("value of i_blue:" + String(config.current_intensity[channel]));
-     			}
+            printOnSerial("value of i_blue:" + String(config.current_intensity[channel]));
+          }
         }
         // Increase Brightness of channel if desired brightness was set higher
-		    if( config.current_intensity[channel] < config.target_intensity[channel]*4 ) {
-  				pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Warm White
-  				yield();  // take a breather, required for ESP8266
-      		config.current_intensity[channel]++;
+        if( config.current_intensity[channel] < config.target_intensity[channel]*4 ) {
+          pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Warm White
+          yield();  // take a breather, required for ESP8266
+          config.current_intensity[channel]++;
           yield();
-     			printOnSerial("value of channel "+String(channel)+":" + String(config.current_intensity[channel]));
-   			}
+          printOnSerial("value of channel "+String(channel)+":" + String(config.current_intensity[channel]));
+        }
         // Decrease Brightness of channel if desired brightness was set lower
         if( config.current_intensity[channel] > config.target_intensity[channel]*4 ) {
           pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Warm White
