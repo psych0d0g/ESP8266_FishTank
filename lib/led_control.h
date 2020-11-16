@@ -14,17 +14,38 @@ void setupPWM(){
     pwmController.setPWMFrequency(100); // Default is 200Hz, supports 24Hz to 1526Hz
 }
 
+void changeBrightness(boolean mode, int channel){
+  if(mode == increase && config.current_intensity[channel] != config.target_intensity[channel]*4){
+    config.current_intensity[channel]++;
+    yield();
+    pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Warm White
+    yield();  // take a breather, required for ESP8266
+    printOnSerial("value of channel "+String(channel)+":" + String(config.current_intensity[channel]));
+  }
+  if(mode == decrease && config.current_intensity[channel] != 0){
+    config.current_intensity[channel]--;
+    yield();
+    pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Blue
+    yield();  // take a breather, required for ESP8266
+    printOnSerial("value of channel "+String(channel)+":" + String(config.current_intensity[channel]));
+  }
+}
+
 bool isday(){
   compute(calculateDayOfYear(currentTime("local")));
   if (config.daynight == 0){
     if (sunset_at > 10000 && sunrise_at > 10000 && sunset_at >= currentTime("local") && sunrise_at <= currentTime("local")) {
+      // It is day
       return true;
     } else if ((sunset_at > 10000 && sunrise_at > 10000 && sunset_at > currentTime("local") && sunrise_at > currentTime("local")) || (sunset_at > 10000 && sunrise_at > 10000 && sunset_at < currentTime("local") && sunrise_at < currentTime("local"))) {
+      //It is night
       return false;
     }
   } else if(config.daynight == 1){
+    // manual ovverride to day active
     return true;
   } else if(config.daynight == 2){
+    // manual override to night active
     return false;
   }
 }
@@ -33,71 +54,58 @@ void handleLedState(){
 	// Only modify White LEDs while in Daylight TimeFrame
   if (millis() - lastSetLed >= LED_INTERVAL){  // if INTERVAL has passed
     lastSetLed = millis(); 
-    if(isday()){
-      // Loop through array from High to Low since we assume blue night light is at end of array
-      // this way we can turn down the Blue light first, before increasing white light brightness
-      for (channel=(sizeof(config.target_intensity) / sizeof(int)); channel>0; channel--) {
-        if (channel == (sizeof(config.target_intensity) / sizeof(int))){
-          if( config.current_intensity[channel] > 0 ) {
-            pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Blue
-            yield();  // take a breather, required for ESP8266
-            config.current_intensity[channel]--;
-            yield();
-            if(config.current_intensity[channel] < 2) {
-              pwmController.setChannelPWM(channel, 0); // Blue
-              yield();
-              config.current_intensity[channel]=0;
+    int target_intensity_length = sizeof(config.target_intensity) / sizeof(int)-1;
+    // Sorry its getting ugly here, but we need some uglyness in the code
+    // to make it beautyful in real world :/
+    // Looping over configured channels
+    for (channel=0; channel<=target_intensity_length; channel++) {
+      // Do this when we have daylight outside
+      if(isday()){
+        // If Channels 6 and 7 (Night Light) are not off yet, turn them off before anything else
+        if(config.current_intensity[6] != 0 || config.current_intensity[7] != 0){
+          if (channel >= target_intensity_length-1){
+            changeBrightness(decrease, channel);
+          }
+        }else{
+          // If the loop has reached a channel that is to be handled at daytime
+          if (channel < target_intensity_length-1){
+            // Increase Brightness of channel if desired brightness was set higher
+            if( config.current_intensity[channel] < config.target_intensity[channel]*4 ) {
+                changeBrightness(increase, channel);
             }
-            printOnSerial("value of i_blue:" + String(config.current_intensity[channel]));
+            // Decrease Brightness of channel if desired brightness was set lower
+            if( config.current_intensity[channel] > config.target_intensity[channel]*4 ) {
+              changeBrightness(decrease, channel);
+            }
           }
         }
-        // Increase Brightness of channel if desired brightness was set higher
-        if( config.current_intensity[channel] < config.target_intensity[channel]*4 ) {
-          pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Warm White
-          yield();  // take a breather, required for ESP8266
-          config.current_intensity[channel]++;
-          yield();
-          printOnSerial("value of channel "+String(channel)+":" + String(config.current_intensity[channel]));
-        }
-        // Decrease Brightness of channel if desired brightness was set lower
-        if( config.current_intensity[channel] > config.target_intensity[channel]*4 ) {
-          pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Warm White
-          yield();  // take a breather, required for ESP8266
-          config.current_intensity[channel]--;
-          yield();
-          printOnSerial("value of channel "+String(channel)+":" + String(config.current_intensity[channel]));
-        }
-      }
-		} else {
-      // Loop through array forward for night mode, turn down white, before turning up blue
-      for (channel=0; channel<(sizeof(config.target_intensity) / sizeof(int)); channel++) {
-        if (channel < (sizeof(config.target_intensity) / sizeof(int))){
-          if( config.current_intensity[channel] > 0 ) {
-            pwmController.setChannelPWM(channel, config.current_intensity[channel]); // all diffrent non blue channels
-            yield();  // take a breather, required for ESP8266
-            config.current_intensity[channel]--;
-            yield();
-            if(config.current_intensity[channel] < 2) {
-              pwmController.setChannelPWM(channel, 0); // whites
-              yield();
-              config.current_intensity[channel]=0;
-            }
-            printOnSerial("value of channel "+String(channel)+":" + String(config.current_intensity[channel]));
+      // Here we start our Nighttime routine
+  		} else {
+        // If channels 1 and 2 are not off yet, turn them off before anything else (Reducing COLD White first)
+        if(config.current_intensity[0] != 0 || config.current_intensity[1] != 0){
+          if (channel < target_intensity_length-5){
+            changeBrightness(decrease, channel);
           }
-        }
-        if( config.current_intensity[channel] < config.target_intensity[channel]*4 ) {
-          pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Probably Blue and UV
-          yield();  // take a breather, required for ESP8266
-          config.current_intensity[channel]++;
-          yield();
-          printOnSerial("value of channel "+String(channel)+":" + String(config.current_intensity[channel]));
-        }
-        if( config.current_intensity[channel] > config.target_intensity[channel]*4 ) {
-          pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Probably Blue and UV
-          yield();  // take a breather, required for ESP8266
-          config.current_intensity[channel]--;
-          yield();
-          printOnSerial("value of channel "+String(channel)+":" + String(config.current_intensity[channel]));
+        // If channels 3 and 4 are not off yet, turn them off next (Reducing Neutral white, getting gradually more warm white like in nature)
+        } else if(config.current_intensity[2] != 0 || config.current_intensity[3] != 0){
+          if (channel < target_intensity_length-3 && channel >= target_intensity_length-5){
+            changeBrightness(decrease, channel);
+          }
+        } else {
+          //If channels 5 and 6 are not off yet, finally turn them off together with adding blue
+          // so we get a nice gradual move to blue night light
+          if (channel < target_intensity_length-1 && channel >= target_intensity_length-3){
+            changeBrightness(decrease, channel);
+          }
+          // If the loop has reached a channel that is handled at night time
+          if (channel >= target_intensity_length-1){
+            if( config.current_intensity[channel] < config.target_intensity[channel]*4 ) {
+              changeBrightness(increase, channel);
+            }
+            if( config.current_intensity[channel] > config.target_intensity[channel]*4 ) {
+              changeBrightness(decrease, channel);
+            }
+          }
         }
       }
     }

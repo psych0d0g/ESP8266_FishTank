@@ -10,8 +10,8 @@ boolean decrease = false;
 struct Config {
   double desired_temp      = 25;
   double temp_offset       = 0.5;
-  int target_intensity[7]  = { 0,0,0,0,0,0,0 };
-  int current_intensity[7] = { 0,0,0,0,0,0,0 };
+  int target_intensity[8]  = { 0,0,0,0,0,0,0,0 };
+  int current_intensity[8] = { 0,0,0,0,0,0,0,0 };
   int daynight             = 0;
 };
 

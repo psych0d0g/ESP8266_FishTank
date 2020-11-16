@@ -15,7 +15,7 @@
 #define DEBUG true
 
 void printOnSerial(String printstr){
-  if (DEBUG == true){
+  if (DEBUG){
     Serial.println(printstr);
   }
 }
@@ -65,6 +65,8 @@ double temp, tempInt, avgInt, tempDiff, fan_pwm;
 long curTime, duration, distance, sloopTime, tloopTime, lastReadTemp, lastTimeCalc, lastSetLed, lastReadLevel, lastSendMqtt, lastUpdateDisplay;
 int sunrise_at = 0;
 int sunset_at = 0;
+
+int curr_intensity = 0;
 
 void timerSetup(){
    curTime = millis();
