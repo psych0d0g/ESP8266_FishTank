@@ -17,7 +17,7 @@ Timezone myTZ(myDST, mySTD);
 TimeChangeRule *tcr;
 
 void setupNTP(){
-	timeClient.begin();
+  timeClient.begin();
 }  
 
 void loopNTP(){
@@ -131,22 +131,22 @@ float getSunset(int T, float B) {
 
 // subfunction to compute it all and return sunrise and sunset epoch's
 void compute(int T) {
-	if (millis() - lastTimeCalc >= INTERVAL){  // if INTERVAL has passed
-	    lastTimeCalc = millis(); 
-	    if (sunrise_at == 0 || sunset_at == 0 || currentTime("local") - previousMidnight(currentTime("local")) < 20) {
-		    float lon     = 8.59;
-		    float lat     = 49.12;
-		    int   zone       = 2;       // Difference from UTC
-		    float B = lat*PI/180.0;  // geogr. Breite in Radians
+  if (millis() - lastTimeCalc >= INTERVAL){  // if INTERVAL has passed
+    lastTimeCalc = millis(); 
+    if (sunrise_at == 0 || sunset_at == 0 || currentTime("local") - previousMidnight(currentTime("local")) < 20) {
+      float lon     = 8.59;
+      float lat     = 49.12;
+      int   zone       = 2;       // Difference from UTC
+      float B = lat*PI/180.0;  // geogr. Breite in Radians
 
-		    // Berechnung von Sonnenauf- und -Untergang
-		    float sunrise    = getSunrise(T, B) - lon /15.0 + zone;    // Sonnenaufgang bei 0 Grad Laenge
-		    float sunset  = getSunset(T, B) - lon /15.0 + zone;  // Sonnenuntergang bei 0 Grad Laenge
+      // Berechnung von Sonnenauf- und -Untergang
+      float sunrise    = getSunrise(T, B) - lon /15.0 + zone;    // Sonnenaufgang bei 0 Grad Laenge
+      float sunset  = getSunset(T, B) - lon /15.0 + zone;  // Sonnenuntergang bei 0 Grad Laenge
 
-		    sunrise_at = previousMidnight(currentTime("local")) + (int)(sunrise*60*60);
-		    sunset_at = previousMidnight(currentTime("local")) + (int)(sunset*60*60);
-		    printOnSerial(" sunrise at: " + String(sunrise_at) + " sunset at: " + String(sunset_at));
-		}
+      sunrise_at = previousMidnight(currentTime("local")) + (int)(sunrise*60*60);
+      sunset_at = previousMidnight(currentTime("local")) + (int)(sunset*60*60);
+      printOnSerial(" sunrise at: " + String(sunrise_at) + " sunset at: " + String(sunset_at));
     }
+  }
 }
 #endif

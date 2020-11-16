@@ -100,8 +100,8 @@ void handleLedState(){
           printOnSerial("value of channel "+String(channel)+":" + String(config.current_intensity[channel]));
         }
       }
-		}
-	}
+    }
+  }
 }
 
 

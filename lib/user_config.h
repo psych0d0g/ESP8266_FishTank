@@ -36,9 +36,9 @@ struct sensorReadings {
 };
 
 sensorReadings sensorReading[] = {
-	{"water_temp", 0.0},
-	{"water_level", 0.0},
-	{"fan_speed", 0.0}
+  {"water_temp", 0.0},
+  {"water_level", 0.0},
+  {"fan_speed", 0.0}
 };
 
 // Update stuff every 5 seconds by default
