@@ -4,6 +4,8 @@
         body { background-color: #202020; }
         h2, td, a { color: #95A5A6; }
         p { color: white; }
+        a#settingsbutton { padding:0px 5px 0px 5px; border: 3px solid #d3d3d3; color: #95A5A6; font-size: 15px; font-style: bold; border-radius: 5px;background: #202020; text-decoration:none; }
+        a#settingsbutton:hover { padding:0px 5px 0px 5px; border: 3px solid #d3d3d3; color: #111; font-size: 15px; font-style: bold; border-radius: 5px;background: #4CAF50; cursor: pointer;transition: transform 0.4s, color 0.4s, background-color 0.4s; text-decoration:none; }
       </style>
       <title>Aquarium Controller</title>
       <meta charset="utf-8">
@@ -38,6 +40,10 @@
         <td><canvas id="temp_gauge"></canvas></td>
         <td><canvas id="pwm_gauge"></canvas></td>
       </tr>
+      <tr>
+        <td align="left"><a id="settingsbutton" href="/settings"> settings </a></td>
+        <td align="left"></td>
+      <tr>
     </table>
     <script type="text/javascript">
       var pwmGauge = new RadialGauge({
