@@ -26,7 +26,11 @@ def raw2arduino():
     except OSError:
         pass
     s = open("html/settings.html", 'r')
+    sj = open("html/js/settings.js", 'r')
     i = open("html/index.html", 'r')
+    ij = open("html/js/index.js", 'r')
+    gj = open("html/js/gauges.js", 'r')
+    ss = open("html/css/style.css", 'r')
     o = open("lib/html.h", 'a+')
     o.write('#ifndef html_h\n')
     o.write('#define html_h\n\n')
@@ -39,7 +43,27 @@ def raw2arduino():
             o.write('\\r\\n"\n')
         else:
             o.write('\\r\\n";\n')
-	i.close()
+    i.close()
+    o.write('String index_script=\n')
+    for line, has_more in lookahead(ij.readlines()):
+        line = line.replace( '"', '\\"' )
+        o.write('"')
+        o.write(line.strip("\n"))
+        if has_more:
+            o.write('\\r\\n"\n')
+        else:
+            o.write('\\r\\n";\n')
+    ij.close()
+    o.write('String gauges_script=\n')
+    for line, has_more in lookahead(gj.readlines()):
+        line = line.replace( '"', '\\"' )
+        o.write('"')
+        o.write(line.strip("\n"))
+        if has_more:
+            o.write('\\r\\n"\n')
+        else:
+            o.write('\\r\\n";\n')
+    gj.close()
     o.write('\nString settings_page=\n')
     for line, has_more in lookahead(s.readlines()):
         line = line.replace( '"', '\\"' )
@@ -50,6 +74,26 @@ def raw2arduino():
         else:
             o.write('\\r\\n";\n')
     s.close()
+    o.write('\nString settings_script=\n')
+    for line, has_more in lookahead(sj.readlines()):
+        line = line.replace( '"', '\\"' )
+        o.write('"')
+        o.write(line.strip("\n"))
+        if has_more:
+            o.write('\\r\\n"\n')
+        else:
+            o.write('\\r\\n";\n')
+    sj.close()
+    o.write('\nString stylesheet=\n')
+    for line, has_more in lookahead(ss.readlines()):
+        line = line.replace( '"', '\\"' )
+        o.write('"')
+        o.write(line.strip("\n"))
+        if has_more:
+            o.write('\\r\\n"\n')
+        else:
+            o.write('\\r\\n";\n')
+    ss.close()
     o.write('#endif\n')
     o.close()
     print("Done!")

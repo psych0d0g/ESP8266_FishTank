@@ -29,12 +29,29 @@ String settingsPage(){
   return settings_page;
 }
 
+String settingsScriptPage(){
+  return settings_script;
+}
+
+String indexScriptPage(){
+  return index_script;
+}
+
+String gaugesScriptPage(){
+  return gauges_script;
+}
+
+String stylesheetPage(){
+  return stylesheet;
+}
+
 String jsonApiHandler(){
   DynamicJsonDocument json(1024);
   //JsonObject json = doc.createObject();
 
   JsonObject fishtankdata = json.createNestedObject("fishtankdata");
     fishtankdata["temperature"] = tempInt;
+    fishtankdata["level"] = "70";
     fishtankdata["fan_pwm"] = fan_pwm;
   JsonObject fishtanksettings = json.createNestedObject("fishtanksettings");
     fishtanksettings["desired_temp"] = config.desired_temp;
@@ -60,6 +77,26 @@ void SettingsHandler(){
   server.send ( 200, "text/html", settingsPage() );
 }
 
+// Handle request for settings document ("/settings")
+void SettingsScriptHandler(){ 
+  server.send ( 200, "text/javascript", settingsScriptPage() );
+}
+
+// Handle request for settings document ("/settings")
+void indexScriptHandler(){ 
+  server.send ( 200, "text/javascript", indexScriptPage() );
+}
+
+// Handle request for settings document ("/settings")
+void gaugesScriptHandler(){ 
+  server.send ( 200, "text/javascript", gaugesScriptPage() );
+}
+
+// Handle request for settings document ("/settings")
+void stylesheetHandler(){ 
+  server.send ( 200, "text/css", stylesheetPage() );
+}
+
 // Handle request for jsonapi document ("/fishtank.json")
 void apiHandler(){ 
   server.send ( 200, "application/json", jsonApiHandler() );
@@ -68,6 +105,10 @@ void apiHandler(){
 void webserverSetup(){
   server.on ( "/", rootHandler );
   server.on ( "/settings", SettingsHandler );
+  server.on ( "/js/settings.js", SettingsScriptHandler );
+  server.on ( "/js/index.js", indexScriptHandler );
+  server.on ( "/js/gauges.js", gaugesScriptHandler );
+  server.on ( "/css/style.css", stylesheetHandler );
   server.on ( "/fishtank.json", apiHandler );
   server.begin();
   printOnSerial( "HTTP server started" );
