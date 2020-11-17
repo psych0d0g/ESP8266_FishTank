@@ -12,20 +12,13 @@
 #define TRIG_PIN D6
 #define ECHO_PIN D7
 
-#define DEBUG false
+#define DEBUG true
 
 void printOnSerial(String printstr){
-  if (DEBUG == true){
+  if (DEBUG){
     Serial.println(printstr);
   }
 }
-
-// LED Color to Channel mappings
-int coldwhite[]={0,1};
-int neutralwhite[]={2,3};
-int warmwhite[]={4,5};
-int blue[]={6};
-int uv[]={7};
 
 // Local Hostname (where you want to reach your controller at)
 // Also used for mqtt and wifi AP name (Case sensitive)
@@ -43,9 +36,9 @@ struct sensorReadings {
 };
 
 sensorReadings sensorReading[] = {
-	{"water_temp", 0.0},
-	{"water_level", 0.0},
-	{"fan_speed", 0.0}
+  {"water_temp", 0.0},
+  {"water_level", 0.0},
+  {"fan_speed", 0.0}
 };
 
 // Update stuff every 5 seconds by default
@@ -56,7 +49,7 @@ unsigned long MQTT_INTERVAL = 10000;   // time between MQTT publishes
 
 // Loop over NTC Readings
 int avgLoop = 5;    //temp measurement loops
-
+int channel = 0;
 //PID parameters.
 double kp=20;   //proportional parameter
 double ki=5;   //integral parameter
@@ -72,10 +65,8 @@ double temp, tempInt, avgInt, tempDiff, fan_pwm;
 long curTime, duration, distance, sloopTime, tloopTime, lastReadTemp, lastTimeCalc, lastSetLed, lastReadLevel, lastSendMqtt, lastUpdateDisplay;
 int sunrise_at = 0;
 int sunset_at = 0;
-int i_cold = 0;
-int i_neutral = 0;
-int i_warm = 0;
-int i_blue = 0;
+
+int curr_intensity = 0;
 
 void timerSetup(){
    curTime = millis();
