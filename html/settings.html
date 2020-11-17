@@ -1,15 +1,45 @@
 <html>
     <head>
       <style>
+        html { font-family: "Gudea", Helvetica, sans-serif; height: 100%; }
         body { background-color: #202020; }
         h2, td, a { color: #95A5A6; }
         p { color: white; }
+        td { padding-bottom: 5px; }
+        .slidecontainer { width: 50%; }
+        .slider { -webkit-appearance: none; appearance: none; width: 100%; height: 15px; border-radius: 5px; background: #d3d3d3; outline: none; opacity: 0.7; -webkit-transition: .2s; transition: opacity .2s; }
+        .slider:hover { opacity: 1; }
+        .slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 25px; height: 25px; border-radius: 50%; background: #4CAF50;  cursor: pointer; }
+        .slider::-moz-range-thumb { width: 25px; height: 25px; border-radius: 50%; background: #4CAF50; cursor: pointer; }
+        .switch { position: relative; margin: 0px auto; width: 270px; height: 20px; border: 3px solid #d3d3d3; color: #95A5A6; font-size: 15px; border-radius: 5px; }
+        .mode { position: relative; display: inline-block; width: 33.3%; height: 100%; line-height: 20px; }
+        .mode:first-child label { border-radius: 2px 0 0 2px; }
+        .mode:last-child label { border-radius: 0 2px 2px 0; }
+        .mode label { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; font-style: bold; text-align: center; transition: transform 0.4s, color 0.4s, background-color 0.4s; }
+        .mode input[type="radio"] { appearance: none; width: 0; height: 0; opacity: 0; }
+        .mode input[type="radio"]:focus { outline: 0; outline-offset: 0; }
+        .mode input[type="radio"]:checked ~ label { background-color: #4CAF50; color: #111; }
+        .mode input[type="radio"]:active ~ label { transform: scale(1.05); }
+        input[type=submit] { border: 3px solid #d3d3d3; color: #95A5A6; font-size: 15px; font-style: bold; border-radius: 5px;background: #202020; }
+        input[type=submit]:hover { border: 3px solid #d3d3d3; color: #111; font-size: 15px; font-style: bold; border-radius: 5px;background: #4CAF50; cursor: pointer;transition: transform 0.4s, color 0.4s, background-color 0.4s; }
       </style>
       <title>Aquarium Controller</title>
       <meta charset="utf-8">
       <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
       <script type="text/javascript">
         $(document).ready(function () {
+          var desiredTemp = document.getElementById("desired_temp");
+          var valueDesiredTemp = document.getElementById("desired_temp_value");
+          var tempOffset = document.getElementById("temp_offset");
+          var valueTempOffset = document.getElementById("temp_offset_value");
+          var coldLight = document.getElementById("desired_cold");
+          var valueColdLight = document.getElementById("desired_cold_value");
+          var neutralLight = document.getElementById("desired_neutral");
+          var valueNeutralLight = document.getElementById("desired_neutral_value");
+          var warmLight = document.getElementById("desired_warm");
+          var valueWarmLight = document.getElementById("desired_warm_value");
+          var blueLight = document.getElementById("desired_blue");
+          var valueBlueLight = document.getElementById("desired_blue_value");
 	            $.ajax({ 
 	            	type: 'GET', 
 	            	contentType: 'application/json; charset=utf-8',
@@ -17,16 +47,39 @@
 	            	data: {}, 
 	            	dataType: 'json',
 	            	success: function (data) {
-                  document.getElementById("desired_temp").value=data.fishtanksettings.desired_temp;
-                  document.getElementById("temp_offset").value=data.fishtanksettings.temp_offset;
-                  document.getElementById("desired_cold").value=data.fishtanksettings.desired_cold;
-                  document.getElementById("desired_neutral").value=data.fishtanksettings.desired_neutral;
-                  document.getElementById("desired_warm").value=data.fishtanksettings.desired_warm;
-                  document.getElementById("desired_blue").value=data.fishtanksettings.desired_blue;
-                  document.getElementById("daynight").selectedIndex=data.fishtanksettings.daynight;
-
+                  desiredTemp.value=data.fishtanksettings.desired_temp;
+                  valueDesiredTemp.innerHTML=data.fishtanksettings.desired_temp;
+                  tempOffset.value=data.fishtanksettings.temp_offset;
+                  valueTempOffset.innerHTML=data.fishtanksettings.temp_offset;
+                  coldLight.value=data.fishtanksettings.desired_cold;
+                  valueColdLight.innerHTML = data.fishtanksettings.desired_cold;
+                  neutralLight.value=data.fishtanksettings.desired_neutral;
+                  valueNeutralLight.innerHTML=data.fishtanksettings.desired_neutral;
+                  warmLight.value=data.fishtanksettings.desired_warm;
+                  valueWarmLight.innerHTML=data.fishtanksettings.desired_warm;
+                  blueLight.value=data.fishtanksettings.desired_blue;
+                  valueBlueLight.innerHTML=data.fishtanksettings.desired_blue;
+                  document.getElementById("dn"+data.fishtanksettings.daynight).checked = true;
 	            	}
 	          	});
+          desiredTemp.oninput = function() {
+              valueDesiredTemp.innerHTML = this.value;
+          }
+          tempOffset.oninput = function() {
+              valueTempOffset.innerHTML = this.value;
+          }
+          coldLight.oninput = function() {
+              valueColdLight.innerHTML = this.value;
+          }
+          neutralLight.oninput = function() {
+              valueNeutralLight.innerHTML = this.value;
+          }
+          warmLight.oninput = function() {
+              valueWarmLight.innerHTML = this.value;
+          }
+          blueLight.oninput = function() {
+              valueBlueLight.innerHTML = this.value;
+          }
         })
       </script>
     </head>
@@ -35,37 +88,62 @@
         <form method="post" action="">
         <table>
             <tr>
-                <td align="left"><strong>Desired water temperature [C]</strong></td>
-                <td align="left"><input id="desired_temp" type="text" name="desired_temp" value="" /></td>
+                <td align="left"><strong>Desired water temp:</strong></td>
+                <td align="right"><span id="desired_temp_value" style="font-weight:bold;color:#4CAF50">0</span>°C</td>
+                <td class="slidecontainer">
+                  <input type="range" min="20" max="30" value="" class="slider" id="desired_temp" name="desired_temp">
+                </td>
             </tr>
             <tr>
-                <td align="left"><strong>Maximum okay offset [C]</strong></td>
-                <td align="left"><input id="temp_offset" type="text" name="temp_offset" value="" /></td>
+                <td align="left"><strong>Maximum okay offset:</strong></td>
+                <td align="right"><span id="temp_offset_value" style="font-weight:bold;color:#4CAF50">0.0</span>°C</td>
+                <td class="slidecontainer">
+                  <input type="range" min="0" max="5" value="" step="0.1" class="slider" id="temp_offset" name="temp_offset">
+                </td>
             </tr>
               <tr>
-                <td align="left"><strong>Max cold White Intensity</strong></td>
-                <td align="left"><input id="desired_cold" type="text" name="desired_cold" value="" /></td>
+                <td align="left"><strong>Max cold white intensity:</strong></td>
+                <td align="right"><span id="desired_cold_value" style="font-weight:bold;color:#4CAF50">0</span>%</td>
+                <td class="slidecontainer">
+                  <input type="range" min="1" max="100" value="" class="slider" id="desired_cold" name="desired_cold">
+                </td>
             </tr>
             <tr>
-                <td align="left"><strong>Max neutral White Intensity</strong></td>
-                <td align="left"><input id="desired_neutral" type="text" name="desired_neutral" value="" /></td>
-            </tr>
-                        <tr>
-                <td align="left"><strong>Max warm White Intensity</strong></td>
-                <td align="left"><input id="desired_warm" type="text" name="desired_warm" value="" /></td>
-            </tr>
-            <tr>
-                <td align="left"><strong>Max blue light Intensity</strong></td>
-                <td align="left"><input id="desired_blue" type="text" name="desired_blue" value="" /></td>
+                <td align="left"><strong>Max neutral white intensity:</strong></td>
+                <td align="right"><span id="desired_neutral_value" style="font-weight:bold;color:#4CAF50">0</span>%</td>
+                <td class="slidecontainer">
+                  <input type="range" min="1" max="100" value="" class="slider" id="desired_neutral" name="desired_neutral">
+                </td>
             </tr>
             <tr>
-                <td align="left"><strong>Day/Night mode</strong></td>
+                <td align="left"><strong>Max warm white intensity:</strong></td>
+                <td align="right"><span id="desired_warm_value" style="font-weight:bold;color:#4CAF50">0</span>%</td>
+                <td class="slidecontainer">
+                  <input type="range" min="1" max="100" value="" class="slider" id="desired_warm" name="desired_warm">
+                </td>
+            </tr>
+            <tr>
+                <td align="left"><strong>Max blue light intensity:</strong></td>
+                <td align="right"><span id="desired_blue_value" style="font-weight:bold;color:#4CAF50">0</span>%</td>
+                <td class="slidecontainer">
+                  <input type="range" min="1" max="100" value="" class="slider" id="desired_blue" name="desired_blue">
+                </td>
+            </tr>
+            <tr>
+                <td align="left"><strong>Day/Night mode:</strong></td>
+                <td></td>
                 <td align="left">
-                  <select name="daynight" id="daynight">
-                    <option value="0">Automatic</option>
-                    <option value="1">Day</option>
-                    <option value="2">Night</option>
-                  </select>
+                  <div class='switch'><div class='mode'>
+                      <input id='dn0' name='daynight' type='radio' value='0'>
+                      <label for='dn0'>Auto</label>
+                    </div><div class='mode'>
+                      <input id='dn1' name='daynight' type='radio' value='1'>
+                      <label for='dn1'>Day</label>
+                    </div><div class='mode'>
+                      <input id='dn2' name='daynight' type='radio' value='2'>
+                      <label for='dn2'>Night</label>
+                    </div>
+                  </div>
                 </td>
             </tr>
             <tr>

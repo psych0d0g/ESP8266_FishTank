@@ -15,7 +15,7 @@ void setupPWM(){
 }
 
 void changeBrightness(boolean mode, int channel){
-  if(mode == increase && config.current_intensity[channel] != config.target_intensity[channel]*4){
+  if(mode == increase && config.current_intensity[channel] != config.target_intensity[channel]*40){
     config.current_intensity[channel]++;
     yield();
     pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Warm White
