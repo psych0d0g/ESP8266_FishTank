@@ -22,7 +22,7 @@ void changeBrightness(boolean mode, int channel){
     yield();  // take a breather, required for ESP8266
     printOnSerial("value of channel "+String(channel)+":" + String(config.current_intensity[channel]));
   }
-  if(mode == decrease && config.current_intensity[channel] != 0){
+  if(mode == decrease && config.current_intensity[channel] > 0){
     config.current_intensity[channel]--;
     yield();
     pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Blue
@@ -70,11 +70,11 @@ void handleLedState(){
           // If the loop has reached a channel that is to be handled at daytime
           if (channel < target_intensity_length-1){
             // Increase Brightness of channel if desired brightness was set higher
-            if( config.current_intensity[channel] < config.target_intensity[channel]*4 ) {
-                changeBrightness(increase, channel);
+            if( config.current_intensity[channel] < config.target_intensity[channel]*40 ) {
+              changeBrightness(increase, channel);
             }
             // Decrease Brightness of channel if desired brightness was set lower
-            if( config.current_intensity[channel] > config.target_intensity[channel]*4 ) {
+            if( config.current_intensity[channel] > config.target_intensity[channel]*40 ) {
               changeBrightness(decrease, channel);
             }
           }
@@ -99,10 +99,10 @@ void handleLedState(){
           }
           // If the loop has reached a channel that is handled at night time
           if (channel >= target_intensity_length-1){
-            if( config.current_intensity[channel] < config.target_intensity[channel]*4 ) {
+            if( config.current_intensity[channel] < config.target_intensity[channel]*40 ) {
               changeBrightness(increase, channel);
             }
-            if( config.current_intensity[channel] > config.target_intensity[channel]*4 ) {
+            if( config.current_intensity[channel] > config.target_intensity[channel]*40 ) {
               changeBrightness(decrease, channel);
             }
           }

@@ -57,6 +57,5 @@ void loop()
   handleWaterLevel();
   printOnScreen(fan_pwm,tempInt);
   //handleMQTT();
-  //Serial.println(currentTime("local"));
   server.handleClient();
 }

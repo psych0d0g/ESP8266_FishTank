@@ -12,7 +12,7 @@
 #define TRIG_PIN D6
 #define ECHO_PIN D7
 
-#define DEBUG true
+#define DEBUG false
 
 void printOnSerial(String printstr){
   if (DEBUG){
