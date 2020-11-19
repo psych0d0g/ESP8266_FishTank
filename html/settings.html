@@ -1,78 +1,78 @@
 <html>
-    <head>
-      <link href="/css/style.css" rel="stylesheet" type="text/css">
-      <title>Aquarium Controller</title>
-      <meta charset="utf-8">
-      <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-      <script src="/js/settings.js"></script>
-    </head>
-    <body>
-        <h2>Aquarium Controller</h2>
-        <form method="post" action="">
-        <table>
-            <tr>
-                <td align="left"><strong>Desired water temp:</strong></td>
-                <td align="right"><span id="desired_temp_value" style="font-weight:bold;color:#4CAF50">0</span>°C</td>
-                <td class="slidecontainer">
-                  <input type="range" min="20" max="30" value="" class="slider" id="desired_temp" name="desired_temp">
-                </td>
-            </tr>
-            <tr>
-                <td align="left"><strong>Maximum okay offset:</strong></td>
-                <td align="right"><span id="temp_offset_value" style="font-weight:bold;color:#4CAF50">0.0</span>°C</td>
-                <td class="slidecontainer">
-                  <input type="range" min="0" max="5" value="" step="0.1" class="slider" id="temp_offset" name="temp_offset">
-                </td>
-            </tr>
-              <tr>
-                <td align="left"><strong>Max cold white intensity:</strong></td>
-                <td align="right"><span id="desired_cold_value" style="font-weight:bold;color:#4CAF50">0</span>%</td>
-                <td class="slidecontainer">
-                  <input type="range" min="1" max="100" value="" class="slider" id="desired_cold" name="desired_cold">
-                </td>
-            </tr>
-            <tr>
-                <td align="left"><strong>Max neutral white intensity:</strong></td>
-                <td align="right"><span id="desired_neutral_value" style="font-weight:bold;color:#4CAF50">0</span>%</td>
-                <td class="slidecontainer">
-                  <input type="range" min="1" max="100" value="" class="slider" id="desired_neutral" name="desired_neutral">
-                </td>
-            </tr>
-            <tr>
-                <td align="left"><strong>Max warm white intensity:</strong></td>
-                <td align="right"><span id="desired_warm_value" style="font-weight:bold;color:#4CAF50">0</span>%</td>
-                <td class="slidecontainer">
-                  <input type="range" min="1" max="100" value="" class="slider" id="desired_warm" name="desired_warm">
-                </td>
-            </tr>
-            <tr>
-                <td align="left"><strong>Max blue light intensity:</strong></td>
-                <td align="right"><span id="desired_blue_value" style="font-weight:bold;color:#4CAF50">0</span>%</td>
-                <td class="slidecontainer">
-                  <input type="range" min="1" max="100" value="" class="slider" id="desired_blue" name="desired_blue">
-                </td>
-            </tr>
-            <tr>
-                <td align="left"><strong>Day/Night mode:</strong></td>
-                <td></td>
-                <td align="left">
-                  <div class='switch'><div class='mode'>
-                      <input id='dn0' name='daynight' type='radio' value='0'>
-                      <label for='dn0'>Auto</label>
-                    </div><div class='mode'>
-                      <input id='dn1' name='daynight' type='radio' value='1'>
-                      <label for='dn1'>Day</label>
-                    </div><div class='mode'>
-                      <input id='dn2' name='daynight' type='radio' value='2'>
-                      <label for='dn2'>Night</label>
-                    </div>
-                  </div>
-                </td>
-            </tr>
-            <tr>
-                <td align="left"><a id="backbutton" href="/"> Back to Status </a></td>
-                <td align="left"></td>
-                <td align="left"><input type="submit" name="submit" value="Save" /></td>
-            <tr>
-        </table>
+<head>
+  <link href="/css/style.css" rel="stylesheet" type="text/css">
+  <title>Aquarium Controller</title>
+  <meta charset="utf-8">
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="/js/settings.js"></script>
+</head>
+<body>
+  <h2>Aquarium Controller</h2>
+  <form method="post" action="">
+  <table>
+    <tr>
+      <td align="left"><u>Description</u></td><td align="right"><u>Current Val</u></td><td align="right"><u>Target Val</u></td><td align="middle"><u>Setting</u></td>
+    </tr><tr>
+      <td align="left">Desired water temp:</td>
+      <td align="right"><span id="current_temp_value">0</span>°C</td>
+      <td align="right"><span id="desired_temp_value">0</span>°C</td>
+      <td class="slidecontainer"><input type="range" min="20" max="30" value="" class="slider" id="desired_temp" name="desired_temp"></td>
+    </tr><tr>
+      <td align="left">Maximum okay offset:</td>
+      <td></td>
+      <td align="right"><span id="temp_offset_value">0.0</span>°C</td>
+      <td class="slidecontainer"><input type="range" min="0" max="5" value="" step="0.1" class="slider" id="temp_offset" name="temp_offset"></td>
+    </tr><tr>
+      <td align="left">Max cold white intensity:</td>
+      <td align="right"><span id="current_cold_value">0</span>%</td>
+      <td align="right"><span id="desired_cold_value">0</span>%</td>
+      <td class="slidecontainer"><input type="range" min="1" max="100" value="" class="slider" id="desired_cold" name="desired_cold"></td>
+    </tr><tr>
+      <td align="left">Max neutral white intensity:</td>
+      <td align="right"><span id="current_neutral_value">0</span>%</td>
+      <td align="right"><span id="desired_neutral_value">0</span>%</td>
+      <td class="slidecontainer"><input type="range" min="1" max="100" value="" class="slider" id="desired_neutral" name="desired_neutral"></td>
+    </tr><tr>
+      <td align="left">Max warm white intensity:</td>
+      <td align="right"><span id="current_warm_value">0</span>%</td>
+      <td align="right"><span id="desired_warm_value">0</span>%</td>
+      <td class="slidecontainer"><input type="range" min="1" max="100" value="" class="slider" id="desired_warm" name="desired_warm"></td>
+    </tr><tr>
+      <td align="left">Max blue light intensity:</td>
+      <td align="right"><span id="current_blue_value">0</span>%</td>
+      <td align="right"><span id="desired_blue_value">0</span>%</td>
+      <td class="slidecontainer"><input type="range" min="1" max="100" value="" class="slider" id="desired_blue" name="desired_blue"></td>
+    </tr><tr>
+      <td align="left">Day/Night mode:</td>
+      <td></td><td></td>
+      <td align="left">
+        <div class='switch'><div class='mode'>
+          <input id='dn0' name='daynight' type='radio' value='0'>
+          <label for='dn0'>Auto</label>
+        </div><div class='mode'>
+          <input id='dn1' name='daynight' type='radio' value='1'>
+          <label for='dn1'>Day</label>
+        </div><div class='mode'>
+          <input id='dn2' name='daynight' type='radio' value='2'>
+          <label for='dn2'>Night</label>
+        </div></div>
+      </td>
+    </tr><tr>
+      <td align="left">Light switch mode:</td>
+      <td></td><td></td>
+      <td align="left">
+        <div class='switch'><div class='light_mode'>
+          <input id='inst0' name='instant' type='radio' value='0'>
+          <label for='inst0'>Fade</label>
+        </div><div class='light_mode'>
+          <input id='inst1' name='instant' type='radio' value='1'>
+          <label for='inst1'>Switch</label>
+        </div></div>
+      </td>
+    </tr><tr>
+      <td align="left"><a id="backbutton" href="/">Back to Status</a></td>
+      <td align="left"><input type="submit" name="submit" value="Save" /></td>
+      <td></td><td></td>
+    <tr>
+  </table>
 </form>

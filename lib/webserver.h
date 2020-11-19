@@ -57,10 +57,14 @@ String jsonApiHandler(){
     fishtanksettings["desired_temp"] = config.desired_temp;
     fishtanksettings["temp_offset"] = config.temp_offset;
     fishtanksettings["desired_cold"] = config.target_intensity[0];
+    for (channel=0; channel<=target_intensity_length; channel++) {
+      fishtanksettings["current_brightness_"+String(channel)] = config.current_intensity[channel]/40;
+    }
     fishtanksettings["desired_neutral"] = config.target_intensity[2];
     fishtanksettings["desired_warm"] = config.target_intensity[4];
     fishtanksettings["desired_blue"] = config.target_intensity[6];
     fishtanksettings["daynight"] = config.daynight;
+    fishtanksettings["instant"] = config.instant;
 
   String output;
   serializeJson(json, output);

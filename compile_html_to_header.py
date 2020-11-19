@@ -34,7 +34,7 @@ def raw2arduino():
     o = open("lib/html.h", 'a+')
     o.write('#ifndef html_h\n')
     o.write('#define html_h\n\n')
-    o.write('String main_page=\n')
+    o.write('static String main_page=\n')
     for line, has_more in lookahead(i.readlines()):
         line = line.replace( '"', '\\"' )
         o.write('"')
@@ -44,7 +44,7 @@ def raw2arduino():
         else:
             o.write('\\r\\n";\n')
     i.close()
-    o.write('String index_script=\n')
+    o.write('\nstatic String index_script=\n')
     for line, has_more in lookahead(ij.readlines()):
         line = line.replace( '"', '\\"' )
         o.write('"')
@@ -54,7 +54,7 @@ def raw2arduino():
         else:
             o.write('\\r\\n";\n')
     ij.close()
-    o.write('String gauges_script=\n')
+    o.write('\nstatic String gauges_script=\n')
     for line, has_more in lookahead(gj.readlines()):
         line = line.replace( '"', '\\"' )
         o.write('"')
@@ -64,7 +64,7 @@ def raw2arduino():
         else:
             o.write('\\r\\n";\n')
     gj.close()
-    o.write('\nString settings_page=\n')
+    o.write('\nstatic String settings_page=\n')
     for line, has_more in lookahead(s.readlines()):
         line = line.replace( '"', '\\"' )
         o.write('"')
@@ -74,7 +74,7 @@ def raw2arduino():
         else:
             o.write('\\r\\n";\n')
     s.close()
-    o.write('\nString settings_script=\n')
+    o.write('\nstatic String settings_script=\n')
     for line, has_more in lookahead(sj.readlines()):
         line = line.replace( '"', '\\"' )
         o.write('"')
@@ -84,7 +84,7 @@ def raw2arduino():
         else:
             o.write('\\r\\n";\n')
     sj.close()
-    o.write('\nString stylesheet=\n')
+    o.write('\nstatic String stylesheet=\n')
     for line, has_more in lookahead(ss.readlines()):
         line = line.replace( '"', '\\"' )
         o.write('"')

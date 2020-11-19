@@ -16,14 +16,22 @@ void setupPWM(){
 
 void changeBrightness(boolean mode, int channel){
   if(mode == increase && config.current_intensity[channel] != config.target_intensity[channel]*40){
-    config.current_intensity[channel]++;
+    if (config.instant==0){
+      config.current_intensity[channel]++;
+    }else {
+      config.current_intensity[channel]=config.target_intensity[channel]*40;
+    }
     yield();
     pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Warm White
     yield();  // take a breather, required for ESP8266
     printOnSerial("value of channel "+String(channel)+":" + String(config.current_intensity[channel]));
   }
   if(mode == decrease && config.current_intensity[channel] > 0){
-    config.current_intensity[channel]--;
+    if (config.instant==0){
+      config.current_intensity[channel]--;
+    } else {
+      config.current_intensity[channel]=0;
+    }
     yield();
     pwmController.setChannelPWM(channel, config.current_intensity[channel]); // Blue
     yield();  // take a breather, required for ESP8266
@@ -54,7 +62,6 @@ void handleLedState(){
 	// Only modify White LEDs while in Daylight TimeFrame
   if (millis() - lastSetLed >= LED_INTERVAL){  // if INTERVAL has passed
     lastSetLed = millis(); 
-    int target_intensity_length = sizeof(config.target_intensity) / sizeof(int)-1;
     // Sorry its getting ugly here, but we need some uglyness in the code
     // to make it beautyful in real world :/
     // Looping over configured channels
