@@ -14,6 +14,7 @@ struct Config {
   int current_intensity[8] = { 0,0,0,0,0,0,0,0 };
   int daynight             = 0;
   int instant              = 0;
+  int daynight_duration    = 0;
 };
 
 Config config;
@@ -51,6 +52,7 @@ void readConfig() {
         config.target_intensity[6] = json["desired_blue"];
         config.daynight = json["daynight"];
         config.instant = json["instant"];
+        config.daynight_duration = json["daynight_duration"];
       }
     }
   } else {

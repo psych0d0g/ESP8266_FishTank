@@ -12,7 +12,7 @@
 ESP8266WebServer server ( 80 );
 
 String indexPage(){
-  return main_page;
+  return String(main_page);
 }
 
 String settingsPage(){
@@ -26,23 +26,23 @@ String settingsPage(){
     }
     saveConfig(json);
   }
-  return settings_page;
+  return String(settings_page);
 }
 
 String settingsScriptPage(){
-  return settings_script;
+  return String(settings_script);
 }
 
 String indexScriptPage(){
-  return index_script;
+  return String(index_script);
 }
 
 String gaugesScriptPage(){
-  return gauges_script;
+  return String(gauges_script);
 }
 
 String stylesheetPage(){
-  return stylesheet;
+  return String(stylesheet);
 }
 
 String jsonApiHandler(){
@@ -65,6 +65,7 @@ String jsonApiHandler(){
     fishtanksettings["desired_blue"] = config.target_intensity[6];
     fishtanksettings["daynight"] = config.daynight;
     fishtanksettings["instant"] = config.instant;
+    fishtanksettings["daynight_duration"] = config.daynight_duration;
 
   String output;
   serializeJson(json, output);

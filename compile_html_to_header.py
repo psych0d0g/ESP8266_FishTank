@@ -34,65 +34,41 @@ def raw2arduino():
     o = open("lib/html.h", 'a+')
     o.write('#ifndef html_h\n')
     o.write('#define html_h\n\n')
-    o.write('static String main_page=\n')
+    o.write('const char* main_page = R"mainhtml(\n')
     for line, has_more in lookahead(i.readlines()):
-        line = line.replace( '"', '\\"' )
-        o.write('"')
-        o.write(line.strip("\n"))
-        if has_more:
-            o.write('\\r\\n"\n')
-        else:
-            o.write('\\r\\n";\n')
+        o.write(line)
+        if not has_more:
+            o.write('\n)mainhtml";\n')
     i.close()
-    o.write('\nstatic String index_script=\n')
+    o.write('\nconst char* index_script = R"indexscript(\n')
     for line, has_more in lookahead(ij.readlines()):
-        line = line.replace( '"', '\\"' )
-        o.write('"')
-        o.write(line.strip("\n"))
-        if has_more:
-            o.write('\\r\\n"\n')
-        else:
-            o.write('\\r\\n";\n')
+        o.write(line)
+        if not has_more:
+            o.write('\n)indexscript";\n')
     ij.close()
-    o.write('\nstatic String gauges_script=\n')
+    o.write('\nconst char* gauges_script = R"gaugesscript(\n')
     for line, has_more in lookahead(gj.readlines()):
-        line = line.replace( '"', '\\"' )
-        o.write('"')
-        o.write(line.strip("\n"))
-        if has_more:
-            o.write('\\r\\n"\n')
-        else:
-            o.write('\\r\\n";\n')
+        o.write(line)
+        if not has_more:
+            o.write('\n)gaugesscript";\n')
     gj.close()
-    o.write('\nstatic String settings_page=\n')
+    o.write('\nconst char* settings_page = R"settingshtml(\n')
     for line, has_more in lookahead(s.readlines()):
-        line = line.replace( '"', '\\"' )
-        o.write('"')
-        o.write(line.strip("\n"))
-        if has_more:
-            o.write('\\r\\n"\n')
-        else:
-            o.write('\\r\\n";\n')
+        o.write(line)
+        if not has_more:
+            o.write('\n)settingshtml";\n')
     s.close()
-    o.write('\nstatic String settings_script=\n')
+    o.write('\nconst char* settings_script = R"settingsscript(\n')
     for line, has_more in lookahead(sj.readlines()):
-        line = line.replace( '"', '\\"' )
-        o.write('"')
-        o.write(line.strip("\n"))
-        if has_more:
-            o.write('\\r\\n"\n')
-        else:
-            o.write('\\r\\n";\n')
+        o.write(line)
+        if not has_more:
+            o.write('\n)settingsscript";\n')
     sj.close()
-    o.write('\nstatic String stylesheet=\n')
+    o.write('\nconst char* stylesheet = R"stylesheet(\n')
     for line, has_more in lookahead(ss.readlines()):
-        line = line.replace( '"', '\\"' )
-        o.write('"')
-        o.write(line.strip("\n"))
-        if has_more:
-            o.write('\\r\\n"\n')
-        else:
-            o.write('\\r\\n";\n')
+        o.write(line)
+        if not has_more:
+            o.write('\n)stylesheet";\n')
     ss.close()
     o.write('#endif\n')
     o.close()

@@ -16,6 +16,9 @@ $(document).ready(function () {
   var blueLight = document.getElementById("desired_blue");
   var valueCurrentBlueLight = document.getElementById("current_blue_value");
   var valueBlueLight = document.getElementById("desired_blue_value");
+  var daynightDuration = document.getElementById("daynight_duration");
+  var valueRemeaningDaynightDuration = document.getElementById("daynight_remeaning_duration_value");
+  var valueDaynightDuration = document.getElementById("desired_daynight_duration_value");
   setInterval(refreshLive, 1000); 
     $.ajax({ 
       type: 'GET', 
@@ -41,6 +44,9 @@ $(document).ready(function () {
         blueLight.value=data.fishtanksettings.desired_blue;
         valueCurrentBlueLight.innerHTML = data.fishtanksettings.current_brightness_6;
         valueBlueLight.innerHTML=data.fishtanksettings.desired_blue;
+        daynightDuration.value=data.fishtanksettings.daynight_duration;
+        valueRemeaningDaynightDuration.innerHTML = data.fishtanksettings.daynight_duration;
+        valueDaynightDuration.innerHTML=data.fishtanksettings.daynight_duration;
         document.getElementById("dn"+data.fishtanksettings.daynight).checked = true;
         document.getElementById("inst"+data.fishtanksettings.instant).checked = true;
       }
@@ -58,25 +64,29 @@ $(document).ready(function () {
           valueCurrentNeutralLight.innerHTML = data.fishtanksettings.current_brightness_2;
           valueCurrentWarmLight.innerHTML = data.fishtanksettings.current_brightness_4;
           valueCurrentBlueLight.innerHTML = data.fishtanksettings.current_brightness_6;
+          valueRemeaningDaynightDuration.innerHTML = data.fishtanksettings.daynight_duration;
         }
       });
     }
   desiredTemp.oninput = function() {
-      valueDesiredTemp.innerHTML = this.value;
+    valueDesiredTemp.innerHTML = this.value;
   }
   tempOffset.oninput = function() {
-      valueTempOffset.innerHTML = this.value;
+    valueTempOffset.innerHTML = this.value;
   }
   coldLight.oninput = function() {
-      valueColdLight.innerHTML = this.value;
+    valueColdLight.innerHTML = this.value;
   }
   neutralLight.oninput = function() {
-      valueNeutralLight.innerHTML = this.value;
+    valueNeutralLight.innerHTML = this.value;
   }
   warmLight.oninput = function() {
-      valueWarmLight.innerHTML = this.value;
+    valueWarmLight.innerHTML = this.value;
   }
   blueLight.oninput = function() {
-      valueBlueLight.innerHTML = this.value;
+    valueBlueLight.innerHTML = this.value;
+  }
+  daynightDuration.oninput = function() {
+    valueDaynightDuration.innerHTML = this.value;
   }
 })

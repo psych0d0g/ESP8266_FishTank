@@ -1,358 +1,385 @@
 #ifndef html_h
 #define html_h
 
-static String main_page=
-"<html>\r\n"
-"    <head>\r\n"
-"      <link href=\"/css/style.css\" rel=\"stylesheet\" type=\"text/css\">\r\n"
-"      <title>Aquarium Controller</title>\r\n"
-"      <meta charset=\"utf-8\">\r\n"
-"      <script src=//cdn.rawgit.com/Mikhus/canvas-gauges/gh-pages/download/2.1.7/all/gauge.min.js></script>\r\n"
-"      <script src=\"//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\"></script>\r\n"
-"      <script src=\"/js/index.js\"></script>\r\n"
-"    </head>\r\n"
-"    <body>\r\n"
-"        <h2>Aquarium Controller</h2>\r\n"
-"    <table>\r\n"
-"      <tr>\r\n"
-"        <td align=\"center\"><strong>Temperature [C]</strong></td>\r\n"
-"        <td align=\"center\"><strong>FAN Speed [%]</strong></td>\r\n"
-"        <td align=\"center\"><strong>Water Level [cm]</strong></td>\r\n"
-"      <tr>\r\n"
-"        <td><canvas id=\"temp_gauge\"></canvas></td>\r\n"
-"        <td><canvas id=\"pwm_gauge\"></canvas></td>\r\n"
-"        <td><canvas id=\"lvl_gauge\"></canvas></td>\r\n"
-"      </tr>\r\n"
-"      <tr>\r\n"
-"        <td align=\"left\"><a id=\"settingsbutton\" href=\"/settings\"> settings </a></td>\r\n"
-"        <td align=\"left\"></td>\r\n"
-"      <tr>\r\n"
-"    </table>\r\n"
-"    <script src=\"/js/gauges.js\"></script>\r\n"
-"  </body>\r\n"
-"</html>\r\n";
+const char* main_page = R"mainhtml(
+<html>
+    <head>
+      <link href="/css/style.css" rel="stylesheet" type="text/css">
+      <title>Aquarium Controller</title>
+      <meta charset="utf-8">
+      <script src=//cdn.rawgit.com/Mikhus/canvas-gauges/gh-pages/download/2.1.7/all/gauge.min.js></script>
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="/js/index.js"></script>
+    </head>
+    <body>
+        <h2>Aquarium Controller</h2>
+    <table>
+      <tr>
+        <td align="center"><strong>Temperature [C]</strong></td>
+        <td align="center"><strong>FAN Speed [%]</strong></td>
+        <td align="center"><strong>Water Level [cm]</strong></td>
+      <tr>
+        <td><canvas id="temp_gauge"></canvas></td>
+        <td><canvas id="pwm_gauge"></canvas></td>
+        <td><canvas id="lvl_gauge"></canvas></td>
+      </tr>
+      <tr>
+        <td align="left"><a id="settingsbutton" href="/settings"> settings </a></td>
+        <td align="left"></td>
+      <tr>
+    </table>
+    <script src="/js/gauges.js"></script>
+  </body>
+</html>
+)mainhtml";
 
-static String index_script=
-"$(document).ready(function () {\r\n"
-"  setInterval(updateGauges, 1000);  \r\n"
-"})\r\n"
-"function updateGauges(){ \r\n"
-"  $.ajax({ \r\n"
-"    type: 'GET', \r\n"
-"    contentType: 'application/json; charset=utf-8',\r\n"
-"    url: '/fishtank.json', \r\n"
-"    data: {}, \r\n"
-"    dataType: 'json',\r\n"
-"    success: function (data) { \r\n"
-"        tempGauge.value=data.fishtankdata.temperature;\r\n"
-"        pwmGauge.value=data.fishtankdata.fan_pwm/250*100;\r\n"
-"        lvlGauge.value=data.fishtankdata.level;\r\n"
-"    }\r\n"
-"  });\r\n"
-"}\r\n";
+const char* index_script = R"indexscript(
+$(document).ready(function () {
+  setInterval(updateGauges, 1000);  
+})
+function updateGauges(){ 
+  $.ajax({ 
+    type: 'GET', 
+    contentType: 'application/json; charset=utf-8',
+    url: '/fishtank.json', 
+    data: {}, 
+    dataType: 'json',
+    success: function (data) { 
+        tempGauge.value=data.fishtankdata.temperature;
+        pwmGauge.value=data.fishtankdata.fan_pwm/250*100;
+        lvlGauge.value=data.fishtankdata.level;
+    }
+  });
+}
+)indexscript";
 
-static String gauges_script=
-"var pwmGauge = new RadialGauge({\r\n"
-"  renderTo: 'pwm_gauge',\r\n"
-"  height: 300,\r\n"
-"  units: '%',\r\n"
-"  minValue: 0,\r\n"
-"  maxValue: 100,\r\n"
-"  majorTicks: [\r\n"
-"    '0',\r\n"
-"    '10',\r\n"
-"    '20',\r\n"
-"    '30',\r\n"
-"    '40',\r\n"
-"    '50',\r\n"
-"    '60',\r\n"
-"    '70',\r\n"
-"    '80',\r\n"
-"    '90',\r\n"
-"    '100'\r\n"
-"  ],\r\n"
-"  colorPlate: \"#202020\",\r\n"
-"  minorTicks: 2,\r\n"
-"  valueBox: true,\r\n"
-"  animationDuration: 1500,\r\n"
-"  animationRule: \"dequint\",\r\n"
-"  animatedValue: true\r\n"
-"});\r\n"
-"pwmGauge.draw();\r\n"
-"pwmGauge.value = 0;\r\n"
-"\r\n"
-"var tempGauge = new RadialGauge({\r\n"
-"  renderTo: 'temp_gauge',\r\n"
-"  height: 300,\r\n"
-"  units: '°C',\r\n"
-"  minValue: 20,\r\n"
-"  maxValue: 35,\r\n"
-"  majorTicks: [\r\n"
-"    '20',\r\n"
-"    '21',\r\n"
-"    '22',\r\n"
-"    '23',\r\n"
-"    '24',\r\n"
-"    '25',\r\n"
-"    '26',\r\n"
-"    '27',\r\n"
-"    '28',\r\n"
-"    '29',\r\n"
-"    '30',\r\n"
-"    '31',\r\n"
-"    '32',\r\n"
-"    '33',\r\n"
-"    '34',\r\n"
-"    '35'\r\n"
-"  ],\r\n"
-"  minorTicks: 5,\r\n"
-"  highlights : [\r\n"
-"    {from: 24, to: 26, color: 'rgba(50, 200, 50, .75)'},\r\n"
-"    {from: 22, to: 24, color: 'rgba(255, 140, 50, .75)'},\r\n"
-"    {from: 20, to: 22, color: 'rgba(255, 50, 50, .75)'},\r\n"
-"    {from: 26, to: 28, color: 'rgba(255, 140, 50, .75)'},\r\n"
-"    {from: 28, to: 35, color: 'rgba(255, 50, 50, .75)'}\r\n"
-"  ],\r\n"
-"  colorPlate: \"#202020\",\r\n"
-"  valueBox: true,\r\n"
-"  animationDuration: 1500,\r\n"
-"  animationRule: \"dequint\",\r\n"
-"  animatedValue: true\r\n"
-"});\r\n"
-"tempGauge.draw();\r\n"
-"tempGauge.value = 0;\r\n"
-"\r\n"
-"\r\n"
-"var lvlGauge = new LinearGauge({\r\n"
-"  renderTo: 'lvl_gauge',\r\n"
-"  width: 120,\r\n"
-"  height: 300,\r\n"
-"  units: 'mm',\r\n"
-"  minValue: 0,\r\n"
-"  maxValue: 80,\r\n"
-"  majorTicks: [\r\n"
-"    '0',\r\n"
-"    '10',\r\n"
-"    '20',\r\n"
-"    '30',\r\n"
-"    '40',\r\n"
-"    '50',\r\n"
-"    '60',\r\n"
-"    '70',\r\n"
-"    '80'\r\n"
-"  ],\r\n"
-"  minorTicks: 5,\r\n"
-"  strokeTicks: true,\r\n"
-"  highlights  : [\r\n"
-"    {from: 0, to: 35, color: 'rgba(200, 50, 50, .75)'},\r\n"
-"    {from: 36, to: 69, color: 'rgba(255, 140, 50, .75)'},\r\n"
-"    {from: 70, to: 80, color: 'rgba(50, 255, 50, .75)'}\r\n"
-"  ],\r\n"
-"  colorPlate: \"#202020\",\r\n"
-"  borderShadowWidth: 0,\r\n"
-"  borders: false,\r\n"
-"  needleType: \"arrow\",\r\n"
-"  needleWidth: 2,\r\n"
-"  animationDuration: 1500,\r\n"
-"  animationRule: \"linear\",\r\n"
-"  tickSide: \"left\",\r\n"
-"  numberSide: \"left\",\r\n"
-"  needleSide: \"left\",\r\n"
-"  barStrokeWidth: 7,\r\n"
-"  barBeginCircle: false\r\n"
-"});\r\n"
-"lvlGauge.draw();\r\n"
-"lvlGauge.value = 0;\r\n";
+const char* gauges_script = R"gaugesscript(
+var pwmGauge = new RadialGauge({
+  renderTo: 'pwm_gauge',
+  height: 300,
+  units: '%',
+  minValue: 0,
+  maxValue: 100,
+  majorTicks: [
+    '0',
+    '10',
+    '20',
+    '30',
+    '40',
+    '50',
+    '60',
+    '70',
+    '80',
+    '90',
+    '100'
+  ],
+  colorPlate: "#202020",
+  minorTicks: 2,
+  valueBox: true,
+  animationDuration: 1500,
+  animationRule: "dequint",
+  animatedValue: true
+});
+pwmGauge.draw();
+pwmGauge.value = 0;
 
-static String settings_page=
-"<html>\r\n"
-"<head>\r\n"
-"  <link href=\"/css/style.css\" rel=\"stylesheet\" type=\"text/css\">\r\n"
-"  <title>Aquarium Controller</title>\r\n"
-"  <meta charset=\"utf-8\">\r\n"
-"  <script src=\"//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\"></script>\r\n"
-"  <script src=\"/js/settings.js\"></script>\r\n"
-"</head>\r\n"
-"<body>\r\n"
-"  <h2>Aquarium Controller</h2>\r\n"
-"  <form method=\"post\" action=\"\">\r\n"
-"  <table>\r\n"
-"    <tr>\r\n"
-"      <td align=\"left\"><u>Description</u></td><td align=\"right\"><u>Current Val</u></td><td align=\"right\"><u>Target Val</u></td><td align=\"middle\"><u>Setting</u></td>\r\n"
-"    </tr><tr>\r\n"
-"      <td align=\"left\">Desired water temp:</td>\r\n"
-"      <td align=\"right\"><span id=\"current_temp_value\">0</span>°C</td>\r\n"
-"      <td align=\"right\"><span id=\"desired_temp_value\">0</span>°C</td>\r\n"
-"      <td class=\"slidecontainer\"><input type=\"range\" min=\"20\" max=\"30\" value=\"\" class=\"slider\" id=\"desired_temp\" name=\"desired_temp\"></td>\r\n"
-"    </tr><tr>\r\n"
-"      <td align=\"left\">Maximum okay offset:</td>\r\n"
-"      <td></td>\r\n"
-"      <td align=\"right\"><span id=\"temp_offset_value\">0.0</span>°C</td>\r\n"
-"      <td class=\"slidecontainer\"><input type=\"range\" min=\"0\" max=\"5\" value=\"\" step=\"0.1\" class=\"slider\" id=\"temp_offset\" name=\"temp_offset\"></td>\r\n"
-"    </tr><tr>\r\n"
-"      <td align=\"left\">Max cold white intensity:</td>\r\n"
-"      <td align=\"right\"><span id=\"current_cold_value\">0</span>%</td>\r\n"
-"      <td align=\"right\"><span id=\"desired_cold_value\">0</span>%</td>\r\n"
-"      <td class=\"slidecontainer\"><input type=\"range\" min=\"1\" max=\"100\" value=\"\" class=\"slider\" id=\"desired_cold\" name=\"desired_cold\"></td>\r\n"
-"    </tr><tr>\r\n"
-"      <td align=\"left\">Max neutral white intensity:</td>\r\n"
-"      <td align=\"right\"><span id=\"current_neutral_value\">0</span>%</td>\r\n"
-"      <td align=\"right\"><span id=\"desired_neutral_value\">0</span>%</td>\r\n"
-"      <td class=\"slidecontainer\"><input type=\"range\" min=\"1\" max=\"100\" value=\"\" class=\"slider\" id=\"desired_neutral\" name=\"desired_neutral\"></td>\r\n"
-"    </tr><tr>\r\n"
-"      <td align=\"left\">Max warm white intensity:</td>\r\n"
-"      <td align=\"right\"><span id=\"current_warm_value\">0</span>%</td>\r\n"
-"      <td align=\"right\"><span id=\"desired_warm_value\">0</span>%</td>\r\n"
-"      <td class=\"slidecontainer\"><input type=\"range\" min=\"1\" max=\"100\" value=\"\" class=\"slider\" id=\"desired_warm\" name=\"desired_warm\"></td>\r\n"
-"    </tr><tr>\r\n"
-"      <td align=\"left\">Max blue light intensity:</td>\r\n"
-"      <td align=\"right\"><span id=\"current_blue_value\">0</span>%</td>\r\n"
-"      <td align=\"right\"><span id=\"desired_blue_value\">0</span>%</td>\r\n"
-"      <td class=\"slidecontainer\"><input type=\"range\" min=\"1\" max=\"100\" value=\"\" class=\"slider\" id=\"desired_blue\" name=\"desired_blue\"></td>\r\n"
-"    </tr><tr>\r\n"
-"      <td align=\"left\">Day/Night mode:</td>\r\n"
-"      <td></td><td></td>\r\n"
-"      <td align=\"left\">\r\n"
-"        <div class='switch'><div class='mode'>\r\n"
-"          <input id='dn0' name='daynight' type='radio' value='0'>\r\n"
-"          <label for='dn0'>Auto</label>\r\n"
-"        </div><div class='mode'>\r\n"
-"          <input id='dn1' name='daynight' type='radio' value='1'>\r\n"
-"          <label for='dn1'>Day</label>\r\n"
-"        </div><div class='mode'>\r\n"
-"          <input id='dn2' name='daynight' type='radio' value='2'>\r\n"
-"          <label for='dn2'>Night</label>\r\n"
-"        </div></div>\r\n"
-"      </td>\r\n"
-"    </tr><tr>\r\n"
-"      <td align=\"left\">Light switch mode:</td>\r\n"
-"      <td></td><td></td>\r\n"
-"      <td align=\"left\">\r\n"
-"        <div class='switch'><div class='light_mode'>\r\n"
-"          <input id='inst0' name='instant' type='radio' value='0'>\r\n"
-"          <label for='inst0'>Fade</label>\r\n"
-"        </div><div class='light_mode'>\r\n"
-"          <input id='inst1' name='instant' type='radio' value='1'>\r\n"
-"          <label for='inst1'>Switch</label>\r\n"
-"        </div></div>\r\n"
-"      </td>\r\n"
-"    </tr><tr>\r\n"
-"      <td align=\"left\"><a id=\"backbutton\" href=\"/\">Back to Status</a></td>\r\n"
-"      <td align=\"left\"><input type=\"submit\" name=\"submit\" value=\"Save\" /></td>\r\n"
-"      <td></td><td></td>\r\n"
-"    <tr>\r\n"
-"  </table>\r\n"
-"</form>\r\n";
+var tempGauge = new RadialGauge({
+  renderTo: 'temp_gauge',
+  height: 300,
+  units: '°C',
+  minValue: 20,
+  maxValue: 35,
+  majorTicks: [
+    '20',
+    '21',
+    '22',
+    '23',
+    '24',
+    '25',
+    '26',
+    '27',
+    '28',
+    '29',
+    '30',
+    '31',
+    '32',
+    '33',
+    '34',
+    '35'
+  ],
+  minorTicks: 5,
+  highlights : [
+    {from: 24, to: 26, color: 'rgba(50, 200, 50, .75)'},
+    {from: 22, to: 24, color: 'rgba(255, 140, 50, .75)'},
+    {from: 20, to: 22, color: 'rgba(255, 50, 50, .75)'},
+    {from: 26, to: 28, color: 'rgba(255, 140, 50, .75)'},
+    {from: 28, to: 35, color: 'rgba(255, 50, 50, .75)'}
+  ],
+  colorPlate: "#202020",
+  valueBox: true,
+  animationDuration: 1500,
+  animationRule: "dequint",
+  animatedValue: true
+});
+tempGauge.draw();
+tempGauge.value = 0;
 
-static String settings_script=
-"$(document).ready(function () {\r\n"
-"  var desiredTemp = document.getElementById(\"desired_temp\");\r\n"
-"  var valueCurrentTemp = document.getElementById(\"current_temp_value\");\r\n"
-"  var valueDesiredTemp = document.getElementById(\"desired_temp_value\");\r\n"
-"  var tempOffset = document.getElementById(\"temp_offset\");\r\n"
-"  var valueTempOffset = document.getElementById(\"temp_offset_value\");\r\n"
-"  var coldLight = document.getElementById(\"desired_cold\");\r\n"
-"  var valueCurrentColdLight = document.getElementById(\"current_cold_value\");\r\n"
-"  var valueColdLight = document.getElementById(\"desired_cold_value\");\r\n"
-"  var neutralLight = document.getElementById(\"desired_neutral\");\r\n"
-"  var valueCurrentNeutralLight = document.getElementById(\"current_neutral_value\");\r\n"
-"  var valueNeutralLight = document.getElementById(\"desired_neutral_value\");\r\n"
-"  var warmLight = document.getElementById(\"desired_warm\");\r\n"
-"  var valueCurrentWarmLight = document.getElementById(\"current_warm_value\");\r\n"
-"  var valueWarmLight = document.getElementById(\"desired_warm_value\");\r\n"
-"  var blueLight = document.getElementById(\"desired_blue\");\r\n"
-"  var valueCurrentBlueLight = document.getElementById(\"current_blue_value\");\r\n"
-"  var valueBlueLight = document.getElementById(\"desired_blue_value\");\r\n"
-"  setInterval(refreshLive, 1000); \r\n"
-"    $.ajax({ \r\n"
-"      type: 'GET', \r\n"
-"      contentType: 'application/json; charset=utf-8',\r\n"
-"      url: '/fishtank.json', \r\n"
-"      data: {}, \r\n"
-"      dataType: 'json',\r\n"
-"      success: function (data) {\r\n"
-"        desiredTemp.value=data.fishtanksettings.desired_temp;\r\n"
-"        valueCurrentTemp.innerHTML=data.fishtankdata.temperature;\r\n"
-"        valueDesiredTemp.innerHTML=data.fishtanksettings.desired_temp;\r\n"
-"        tempOffset.value=data.fishtanksettings.temp_offset;\r\n"
-"        valueTempOffset.innerHTML=data.fishtanksettings.temp_offset;\r\n"
-"        coldLight.value=data.fishtanksettings.desired_cold;\r\n"
-"        valueCurrentColdLight.innerHTML = data.fishtanksettings.current_brightness_0;\r\n"
-"        valueColdLight.innerHTML = data.fishtanksettings.desired_cold;\r\n"
-"        neutralLight.value=data.fishtanksettings.desired_neutral;\r\n"
-"        valueCurrentNeutralLight.innerHTML = data.fishtanksettings.current_brightness_2;\r\n"
-"        valueNeutralLight.innerHTML=data.fishtanksettings.desired_neutral;\r\n"
-"        warmLight.value=data.fishtanksettings.desired_warm;\r\n"
-"        valueCurrentWarmLight.innerHTML = data.fishtanksettings.current_brightness_4;\r\n"
-"        valueWarmLight.innerHTML=data.fishtanksettings.desired_warm;\r\n"
-"        blueLight.value=data.fishtanksettings.desired_blue;\r\n"
-"        valueCurrentBlueLight.innerHTML = data.fishtanksettings.current_brightness_6;\r\n"
-"        valueBlueLight.innerHTML=data.fishtanksettings.desired_blue;\r\n"
-"        document.getElementById(\"dn\"+data.fishtanksettings.daynight).checked = true;\r\n"
-"        document.getElementById(\"inst\"+data.fishtanksettings.instant).checked = true;\r\n"
-"      }\r\n"
-"    });\r\n"
-"    function refreshLive(){ \r\n"
-"      $.ajax({ \r\n"
-"        type: 'GET', \r\n"
-"        contentType: 'application/json; charset=utf-8',\r\n"
-"        url: '/fishtank.json', \r\n"
-"        data: {}, \r\n"
-"        dataType: 'json',\r\n"
-"        success: function (data) {\r\n"
-"          valueCurrentTemp.innerHTML=data.fishtankdata.temperature;\r\n"
-"          valueCurrentColdLight.innerHTML = data.fishtanksettings.current_brightness_0;\r\n"
-"          valueCurrentNeutralLight.innerHTML = data.fishtanksettings.current_brightness_2;\r\n"
-"          valueCurrentWarmLight.innerHTML = data.fishtanksettings.current_brightness_4;\r\n"
-"          valueCurrentBlueLight.innerHTML = data.fishtanksettings.current_brightness_6;\r\n"
-"        }\r\n"
-"      });\r\n"
-"    }\r\n"
-"  desiredTemp.oninput = function() {\r\n"
-"      valueDesiredTemp.innerHTML = this.value;\r\n"
-"  }\r\n"
-"  tempOffset.oninput = function() {\r\n"
-"      valueTempOffset.innerHTML = this.value;\r\n"
-"  }\r\n"
-"  coldLight.oninput = function() {\r\n"
-"      valueColdLight.innerHTML = this.value;\r\n"
-"  }\r\n"
-"  neutralLight.oninput = function() {\r\n"
-"      valueNeutralLight.innerHTML = this.value;\r\n"
-"  }\r\n"
-"  warmLight.oninput = function() {\r\n"
-"      valueWarmLight.innerHTML = this.value;\r\n"
-"  }\r\n"
-"  blueLight.oninput = function() {\r\n"
-"      valueBlueLight.innerHTML = this.value;\r\n"
-"  }\r\n"
-"})\r\n";
 
-static String stylesheet=
-"html { font-family: \"Gudea\", Helvetica, sans-serif; height: 100%; }\r\n"
-"body { background-color: #202020; }\r\n"
-"h2, td, a { color: #95A5A6; }\r\n"
-"p { color: white; }\r\n"
-"td { padding-bottom: 5px;font-weight:bold; }\r\n"
-"span { font-weight:bold;color:#4CAF50; }\r\n"
-".slidecontainer { width: 50%; }\r\n"
-".slider { -webkit-appearance: none; appearance: none; width: 100%; height: 15px; border-radius: 5px; background: #d3d3d3; outline: none; opacity: 0.7; -webkit-transition: .2s; transition: opacity .2s; }\r\n"
-".slider:hover { opacity: 1; }\r\n"
-".slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 25px; height: 25px; border-radius: 50%; background: #4CAF50;  cursor: pointer; }\r\n"
-".slider::-moz-range-thumb { width: 25px; height: 25px; border-radius: 50%; background: #4CAF50; cursor: pointer; }\r\n"
-".switch { position: relative; margin: 0px auto; width: 100%; height: 20px; border: 3px solid #d3d3d3; color: #95A5A6; font-size: 15px; border-radius: 5px; }\r\n"
-".mode { position: relative; display: inline-block; width: 33.3%; height: 100%; line-height: 20px; }\r\n"
-".light_mode { position: relative; display: inline-block; width: 50%; height: 100%; line-height: 20px; }\r\n"
-".light_mode:first-child label, .mode:first-child label { border-radius: 2px 0 0 2px; }\r\n"
-".light_mode:last-child label, .mode:last-child label { border-radius: 0 2px 2px 0; }\r\n"
-".light_mode label, .mode label { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; font-style: bold; text-align: center; transition: transform 0.4s, color 0.4s, background-color 0.4s; }\r\n"
-".light_mode input[type=\"radio\"], .mode input[type=\"radio\"] { appearance: none; width: 0; height: 0; opacity: 0; }\r\n"
-".light_mode input[type=\"radio\"]:focus, .mode input[type=\"radio\"]:focus { outline: 0; outline-offset: 0; }\r\n"
-".light_mode input[type=\"radio\"]:checked ~ label, .mode input[type=\"radio\"]:checked ~ label { background-color: #4CAF50; color: #111; }\r\n"
-".light_mode input[type=\"radio\"]:active ~ label, .mode input[type=\"radio\"]:active ~ label { transform: scale(1.05); }\r\n"
-"a#backbutton, input[type=submit] { border: 3px solid #d3d3d3; color: #95A5A6; font-size: 15px; font-style: bold; border-radius: 5px;background: #202020; text-decoration:none; }\r\n"
-"a#backbutton:hover, input[type=submit]:hover { border: 3px solid #d3d3d3; color: #111; font-size: 15px; font-style: bold; border-radius: 5px;background: #4CAF50; cursor: pointer;transition: transform 0.4s, color 0.4s, background-color 0.4s; text-decoration:none; }\r\n"
-"a#settingsbutton { padding:0px 5px 0px 5px; border: 3px solid #d3d3d3; color: #95A5A6; font-size: 15px; font-style: bold; border-radius: 5px;background: #202020; text-decoration:none; }\r\n"
-"a#settingsbutton:hover { padding:0px 5px 0px 5px; border: 3px solid #d3d3d3; color: #111; font-size: 15px; font-style: bold; border-radius: 5px;background: #4CAF50; cursor: pointer;transition: transform 0.4s, color 0.4s, background-color 0.4s; text-decoration:none; }\r\n"
-"a#backbutton, a#backbutton:hover{ padding:0px 5px 0px 5px; }\r\n";
+var lvlGauge = new LinearGauge({
+  renderTo: 'lvl_gauge',
+  width: 120,
+  height: 300,
+  units: 'mm',
+  minValue: 0,
+  maxValue: 80,
+  majorTicks: [
+    '0',
+    '10',
+    '20',
+    '30',
+    '40',
+    '50',
+    '60',
+    '70',
+    '80'
+  ],
+  minorTicks: 5,
+  strokeTicks: true,
+  highlights  : [
+    {from: 0, to: 35, color: 'rgba(200, 50, 50, .75)'},
+    {from: 36, to: 69, color: 'rgba(255, 140, 50, .75)'},
+    {from: 70, to: 80, color: 'rgba(50, 255, 50, .75)'}
+  ],
+  colorPlate: "#202020",
+  borderShadowWidth: 0,
+  borders: false,
+  needleType: "arrow",
+  needleWidth: 2,
+  animationDuration: 1500,
+  animationRule: "linear",
+  tickSide: "left",
+  numberSide: "left",
+  needleSide: "left",
+  barStrokeWidth: 7,
+  barBeginCircle: false
+});
+lvlGauge.draw();
+lvlGauge.value = 0;
+)gaugesscript";
+
+const char* settings_page = R"settingshtml(
+<html>
+<head>
+  <title>Aquarium Controller</title>
+  <meta charset="utf-8">
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="/js/settings.js"></script>
+  <link href="/css/style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+  <h2>Aquarium Controller</h2>
+  <form method="post" action="">
+  <table>
+    <tr>
+      <td align="left"><u>Description</u></td>
+      <td align="right"><u>Current Val</u></td>
+      <td align="right"><u>Target Val</u></td>
+      <td align="middle"><u>Setting</u></td>
+    </tr><tr>
+      <td align="left">Desired water temp:</td>
+      <td align="right"><span id="current_temp_value">0</span>°C</td>
+      <td align="right"><span id="desired_temp_value">0</span>°C</td>
+      <td class="slidecontainer"><input type="range" min="20" max="30" value="" class="slider" id="desired_temp" name="desired_temp"></td>
+    </tr><tr>
+      <td align="left">Maximum okay offset:</td>
+      <td></td>
+      <td align="right"><span id="temp_offset_value">0.0</span>°C</td>
+      <td class="slidecontainer"><input type="range" min="0" max="5" value="" step="0.1" class="slider" id="temp_offset" name="temp_offset"></td>
+    </tr><tr>
+      <td align="left">Max cold white intensity:</td>
+      <td align="right"><span id="current_cold_value">0</span>%</td>
+      <td align="right"><span id="desired_cold_value">0</span>%</td>
+      <td class="slidecontainer"><input type="range" min="1" max="100" value="" class="slider" id="desired_cold" name="desired_cold"></td>
+    </tr><tr>
+      <td align="left">Max neutral white intensity:</td>
+      <td align="right"><span id="current_neutral_value">0</span>%</td>
+      <td align="right"><span id="desired_neutral_value">0</span>%</td>
+      <td class="slidecontainer"><input type="range" min="1" max="100" value="" class="slider" id="desired_neutral" name="desired_neutral"></td>
+    </tr><tr>
+      <td align="left">Max warm white intensity:</td>
+      <td align="right"><span id="current_warm_value">0</span>%</td>
+      <td align="right"><span id="desired_warm_value">0</span>%</td>
+      <td class="slidecontainer"><input type="range" min="1" max="100" value="" class="slider" id="desired_warm" name="desired_warm"></td>
+    </tr><tr>
+      <td align="left">Max blue light intensity:</td>
+      <td align="right"><span id="current_blue_value">0</span>%</td>
+      <td align="right"><span id="desired_blue_value">0</span>%</td>
+      <td class="slidecontainer"><input type="range" min="1" max="100" value="" class="slider" id="desired_blue" name="desired_blue"></td>
+    </tr><tr>
+      <td align="left">Day/Night fade duration:</td>
+      <td align="right"><span id="daynight_remeaning_duration_value">0</span>min</td>
+      <td align="right"><span id="desired_daynight_duration_value">0</span>min</td>
+      <td class="slidecontainer"><input type="range" min="1" max="100" value="" class="slider" id="daynight_duration" name="daynight_duration"></td>
+    </tr><tr>
+      <td align="left">Day/Night mode:</td>
+      <td></td>
+      <td></td>
+      <td align="left">
+        <div class='switch'><div class='mode'>
+          <input id='dn0' name='daynight' type='radio' value='0'>
+          <label for='dn0'>Auto</label>
+        </div><div class='mode'>
+          <input id='dn1' name='daynight' type='radio' value='1'>
+          <label for='dn1'>Day</label>
+        </div><div class='mode'>
+          <input id='dn2' name='daynight' type='radio' value='2'>
+          <label for='dn2'>Night</label>
+        </div></div>
+      </td>
+    </tr><tr>
+      <td align="left">Light switch mode:</td>
+      <td></td>
+      <td></td>
+      <td align="left">
+        <div class='switch'><div class='light_mode'>
+          <input id='inst0' name='instant' type='radio' value='0'>
+          <label for='inst0'>Fade</label>
+        </div><div class='light_mode'>
+          <input id='inst1' name='instant' type='radio' value='1'>
+          <label for='inst1'>Switch</label>
+        </div></div>
+      </td>
+    </tr><tr>
+      <td align="left"><a id="backbutton" href="/">Back to Status</a></td>
+      <td align="left"><input type="submit" name="submit" value="Save" /></td>
+      <td></td>
+      <td></td>
+    <tr>
+  </table>
+</form>
+)settingshtml";
+
+const char* settings_script = R"settingsscript(
+$(document).ready(function () {
+  var desiredTemp = document.getElementById("desired_temp");
+  var valueCurrentTemp = document.getElementById("current_temp_value");
+  var valueDesiredTemp = document.getElementById("desired_temp_value");
+  var tempOffset = document.getElementById("temp_offset");
+  var valueTempOffset = document.getElementById("temp_offset_value");
+  var coldLight = document.getElementById("desired_cold");
+  var valueCurrentColdLight = document.getElementById("current_cold_value");
+  var valueColdLight = document.getElementById("desired_cold_value");
+  var neutralLight = document.getElementById("desired_neutral");
+  var valueCurrentNeutralLight = document.getElementById("current_neutral_value");
+  var valueNeutralLight = document.getElementById("desired_neutral_value");
+  var warmLight = document.getElementById("desired_warm");
+  var valueCurrentWarmLight = document.getElementById("current_warm_value");
+  var valueWarmLight = document.getElementById("desired_warm_value");
+  var blueLight = document.getElementById("desired_blue");
+  var valueCurrentBlueLight = document.getElementById("current_blue_value");
+  var valueBlueLight = document.getElementById("desired_blue_value");
+  var daynightDuration = document.getElementById("daynight_duration");
+  var valueRemeaningDaynightDuration = document.getElementById("daynight_remeaning_duration_value");
+  var valueDaynightDuration = document.getElementById("desired_daynight_duration_value");
+  setInterval(refreshLive, 1000); 
+    $.ajax({ 
+      type: 'GET', 
+      contentType: 'application/json; charset=utf-8',
+      url: '/fishtank.json', 
+      data: {}, 
+      dataType: 'json',
+      success: function (data) {
+        desiredTemp.value=data.fishtanksettings.desired_temp;
+        valueCurrentTemp.innerHTML=data.fishtankdata.temperature;
+        valueDesiredTemp.innerHTML=data.fishtanksettings.desired_temp;
+        tempOffset.value=data.fishtanksettings.temp_offset;
+        valueTempOffset.innerHTML=data.fishtanksettings.temp_offset;
+        coldLight.value=data.fishtanksettings.desired_cold;
+        valueCurrentColdLight.innerHTML = data.fishtanksettings.current_brightness_0;
+        valueColdLight.innerHTML = data.fishtanksettings.desired_cold;
+        neutralLight.value=data.fishtanksettings.desired_neutral;
+        valueCurrentNeutralLight.innerHTML = data.fishtanksettings.current_brightness_2;
+        valueNeutralLight.innerHTML=data.fishtanksettings.desired_neutral;
+        warmLight.value=data.fishtanksettings.desired_warm;
+        valueCurrentWarmLight.innerHTML = data.fishtanksettings.current_brightness_4;
+        valueWarmLight.innerHTML=data.fishtanksettings.desired_warm;
+        blueLight.value=data.fishtanksettings.desired_blue;
+        valueCurrentBlueLight.innerHTML = data.fishtanksettings.current_brightness_6;
+        valueBlueLight.innerHTML=data.fishtanksettings.desired_blue;
+        daynightDuration.value=data.fishtanksettings.daynight_duration;
+        valueRemeaningDaynightDuration.innerHTML = data.fishtanksettings.daynight_duration;
+        valueDaynightDuration.innerHTML=data.fishtanksettings.daynight_duration;
+        document.getElementById("dn"+data.fishtanksettings.daynight).checked = true;
+        document.getElementById("inst"+data.fishtanksettings.instant).checked = true;
+      }
+    });
+    function refreshLive(){ 
+      $.ajax({ 
+        type: 'GET', 
+        contentType: 'application/json; charset=utf-8',
+        url: '/fishtank.json', 
+        data: {}, 
+        dataType: 'json',
+        success: function (data) {
+          valueCurrentTemp.innerHTML=data.fishtankdata.temperature;
+          valueCurrentColdLight.innerHTML = data.fishtanksettings.current_brightness_0;
+          valueCurrentNeutralLight.innerHTML = data.fishtanksettings.current_brightness_2;
+          valueCurrentWarmLight.innerHTML = data.fishtanksettings.current_brightness_4;
+          valueCurrentBlueLight.innerHTML = data.fishtanksettings.current_brightness_6;
+          valueRemeaningDaynightDuration.innerHTML = data.fishtanksettings.daynight_duration;
+        }
+      });
+    }
+  desiredTemp.oninput = function() {
+    valueDesiredTemp.innerHTML = this.value;
+  }
+  tempOffset.oninput = function() {
+    valueTempOffset.innerHTML = this.value;
+  }
+  coldLight.oninput = function() {
+    valueColdLight.innerHTML = this.value;
+  }
+  neutralLight.oninput = function() {
+    valueNeutralLight.innerHTML = this.value;
+  }
+  warmLight.oninput = function() {
+    valueWarmLight.innerHTML = this.value;
+  }
+  blueLight.oninput = function() {
+    valueBlueLight.innerHTML = this.value;
+  }
+  daynightDuration.oninput = function() {
+    valueDaynightDuration.innerHTML = this.value;
+  }
+})
+)settingsscript";
+
+const char* stylesheet = R"stylesheet(
+html { font-family: "Gudea", Helvetica, sans-serif; height: 100%; }
+body { background-color: #202020; }
+h2, td, a { color: #95A5A6; }
+p { color: white; }
+td { padding-bottom: 5px;font-weight:bold; }
+span { font-weight:bold;color:#4CAF50; }
+.slidecontainer { width: 50%; }
+.slider { -webkit-appearance: none; appearance: none; width: 100%; height: 15px; border-radius: 5px; background: #d3d3d3; outline: none; opacity: 0.7; -webkit-transition: .2s; transition: opacity .2s; }
+.slider:hover { opacity: 1; }
+.slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 25px; height: 25px; border-radius: 50%; background: #4CAF50;  cursor: pointer; }
+.slider::-moz-range-thumb { width: 25px; height: 25px; border-radius: 50%; background: #4CAF50; cursor: pointer; }
+.switch { position: relative; margin: 0px auto; width: 100%; height: 20px; border: 3px solid #d3d3d3; color: #95A5A6; font-size: 15px; border-radius: 5px; }
+.mode { position: relative; display: inline-block; width: 33.3%; height: 100%; line-height: 20px; }
+.light_mode { position: relative; display: inline-block; width: 50%; height: 100%; line-height: 20px; }
+.light_mode:first-child label, .mode:first-child label { border-radius: 2px 0 0 2px; }
+.light_mode:last-child label, .mode:last-child label { border-radius: 0 2px 2px 0; }
+.light_mode label, .mode label { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; font-style: bold; text-align: center; transition: transform 0.4s, color 0.4s, background-color 0.4s; }
+.light_mode input[type="radio"], .mode input[type="radio"] { appearance: none; width: 0; height: 0; opacity: 0; }
+.light_mode input[type="radio"]:focus, .mode input[type="radio"]:focus { outline: 0; outline-offset: 0; }
+.light_mode input[type="radio"]:checked ~ label, .mode input[type="radio"]:checked ~ label { background-color: #4CAF50; color: #111; }
+.light_mode input[type="radio"]:active ~ label, .mode input[type="radio"]:active ~ label { transform: scale(1.05); }
+a#backbutton, input[type=submit] { border: 3px solid #d3d3d3; color: #95A5A6; font-size: 15px; font-style: bold; border-radius: 5px;background: #202020; text-decoration:none; }
+a#backbutton:hover, input[type=submit]:hover { border: 3px solid #d3d3d3; color: #111; font-size: 15px; font-style: bold; border-radius: 5px;background: #4CAF50; cursor: pointer;transition: transform 0.4s, color 0.4s, background-color 0.4s; text-decoration:none; }
+a#settingsbutton { padding:0px 5px 0px 5px; border: 3px solid #d3d3d3; color: #95A5A6; font-size: 15px; font-style: bold; border-radius: 5px;background: #202020; text-decoration:none; }
+a#settingsbutton:hover { padding:0px 5px 0px 5px; border: 3px solid #d3d3d3; color: #111; font-size: 15px; font-style: bold; border-radius: 5px;background: #4CAF50; cursor: pointer;transition: transform 0.4s, color 0.4s, background-color 0.4s; text-decoration:none; }
+a#backbutton, a#backbutton:hover{ padding:0px 5px 0px 5px; }
+)stylesheet";
 #endif

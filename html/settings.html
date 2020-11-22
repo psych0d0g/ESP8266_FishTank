@@ -1,17 +1,20 @@
 <html>
 <head>
-  <link href="/css/style.css" rel="stylesheet" type="text/css">
   <title>Aquarium Controller</title>
   <meta charset="utf-8">
   <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="/js/settings.js"></script>
+  <link href="/css/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
   <h2>Aquarium Controller</h2>
   <form method="post" action="">
   <table>
     <tr>
-      <td align="left"><u>Description</u></td><td align="right"><u>Current Val</u></td><td align="right"><u>Target Val</u></td><td align="middle"><u>Setting</u></td>
+      <td align="left"><u>Description</u></td>
+      <td align="right"><u>Current Val</u></td>
+      <td align="right"><u>Target Val</u></td>
+      <td align="middle"><u>Setting</u></td>
     </tr><tr>
       <td align="left">Desired water temp:</td>
       <td align="right"><span id="current_temp_value">0</span>°C</td>
@@ -43,8 +46,14 @@
       <td align="right"><span id="desired_blue_value">0</span>%</td>
       <td class="slidecontainer"><input type="range" min="1" max="100" value="" class="slider" id="desired_blue" name="desired_blue"></td>
     </tr><tr>
+      <td align="left">Day/Night fade duration:</td>
+      <td align="right"><span id="daynight_remeaning_duration_value">0</span>min</td>
+      <td align="right"><span id="desired_daynight_duration_value">0</span>min</td>
+      <td class="slidecontainer"><input type="range" min="1" max="100" value="" class="slider" id="daynight_duration" name="daynight_duration"></td>
+    </tr><tr>
       <td align="left">Day/Night mode:</td>
-      <td></td><td></td>
+      <td></td>
+      <td></td>
       <td align="left">
         <div class='switch'><div class='mode'>
           <input id='dn0' name='daynight' type='radio' value='0'>
@@ -59,7 +68,8 @@
       </td>
     </tr><tr>
       <td align="left">Light switch mode:</td>
-      <td></td><td></td>
+      <td></td>
+      <td></td>
       <td align="left">
         <div class='switch'><div class='light_mode'>
           <input id='inst0' name='instant' type='radio' value='0'>
@@ -72,7 +82,8 @@
     </tr><tr>
       <td align="left"><a id="backbutton" href="/">Back to Status</a></td>
       <td align="left"><input type="submit" name="submit" value="Save" /></td>
-      <td></td><td></td>
+      <td></td>
+      <td></td>
     <tr>
   </table>
 </form>
